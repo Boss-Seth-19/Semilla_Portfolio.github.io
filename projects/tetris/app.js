@@ -30,7 +30,7 @@ const holdButton = document.getElementById("hold-piece");
 
 const COLS = 10;
 const ROWS = 20;
-const BLOCK = 30;
+const BLOCK_SIZE = 30;
 
 const PIECES = {
     I: {
@@ -91,12 +91,14 @@ const PIECES = {
 
 const TYPES = Object.keys(PIECES);
 
-let board = [];
-let current = null;
+let board = createBoard();
+
+let currentPiece = null;
 let nextType = null;
 let holdType = null;
 
 let bag = [];
+let canHold = true;
 
 let score = 0;
 let lines = 0;
@@ -104,18 +106,17 @@ let level = 1;
 
 let running = false;
 let gameOver = false;
-let canHold = true;
 
-let lastTime = 0;
 let fallTimer = 0;
-let frameId = null;
+let lastTime = 0;
+let animationId = null;
 
 let musicEnabled = true;
 
 
-/* =========================
+/* ==============================
    BOARD
-========================= */
+============================== */
 
 function createBoard() {
     return Array.from(
@@ -125,54 +126,58 @@ function createBoard() {
 }
 
 
-/* =========================
-   RANDOMIZER
-========================= */
+/* ==============================
+   7-BAG
+============================== */
 
-function shuffledBag() {
-    const result = [...TYPES];
+function shuffle(array) {
+    const result = [...array];
 
     for (let i = result.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [result[i], result[j]] = [result[j], result[i]];
+
+        [result[i], result[j]] =
+            [result[j], result[i]];
     }
 
     return result;
 }
 
-function getRandomType() {
+function getPieceType() {
     if (bag.length === 0) {
-        bag = shuffledBag();
+        bag = shuffle(TYPES);
     }
 
     return bag.shift();
 }
 
 
-/* =========================
-   PIECE
-========================= */
+/* ==============================
+   PIECE CREATION
+============================== */
 
 function createPiece(type) {
-    const source = PIECES[type];
+    const definition = PIECES[type];
 
     return {
-        type,
-        color: source.color,
-        shape: source.shape.map(row => [...row]),
+        type: type,
+        color: definition.color,
+        shape: definition.shape.map(row => [...row]),
+
         x: Math.floor(
-            (COLS - source.shape[0].length) / 2
+            (COLS - definition.shape[0].length) / 2
         ),
+
         y: 0
     };
 }
 
 
-/* =========================
+/* ==============================
    COLLISION
-========================= */
+============================== */
 
-function collision(piece, offsetX = 0, offsetY = 0, shape = piece.shape) {
+function isCollision(piece, offsetX = 0, offsetY = 0, shape = piece.shape) {
     for (let row = 0; row < shape.length; row++) {
         for (let col = 0; col < shape[row].length; col++) {
 
@@ -180,8 +185,15 @@ function collision(piece, offsetX = 0, offsetY = 0, shape = piece.shape) {
                 continue;
             }
 
-            const x = piece.x + col + offsetX;
-            const y = piece.y + row + offsetY;
+            const x =
+                piece.x +
+                col +
+                offsetX;
+
+            const y =
+                piece.y +
+                row +
+                offsetY;
 
             if (x < 0 || x >= COLS) {
                 return true;
@@ -201,102 +213,106 @@ function collision(piece, offsetX = 0, offsetY = 0, shape = piece.shape) {
 }
 
 
-/* =========================
+/* ==============================
    MOVEMENT
-========================= */
+============================== */
 
 function moveLeft() {
-    if (!running || !current) {
+    if (!running || !currentPiece) {
         return;
     }
 
-    if (!collision(current, -1, 0)) {
-        current.x--;
+    if (!isCollision(currentPiece, -1, 0)) {
+        currentPiece.x--;
         draw();
     }
 }
 
 function moveRight() {
-    if (!running || !current) {
+    if (!running || !currentPiece) {
         return;
     }
 
-    if (!collision(current, 1, 0)) {
-        current.x++;
+    if (!isCollision(currentPiece, 1, 0)) {
+        currentPiece.x++;
         draw();
     }
 }
 
 function softDrop() {
-    if (!running || !current) {
+    if (!running || !currentPiece) {
         return;
     }
 
-    if (!collision(current, 0, 1)) {
-        current.y++;
+    if (!isCollision(currentPiece, 0, 1)) {
+        currentPiece.y++;
         score++;
         updateHUD();
         draw();
     } else {
-        lockCurrent();
+        lockPiece();
     }
 }
 
 function hardDrop() {
-    if (!running || !current) {
+    if (!running || !currentPiece) {
         return;
     }
 
     let distance = 0;
 
-    while (!collision(current, 0, 1)) {
-        current.y++;
+    while (!isCollision(currentPiece, 0, 1)) {
+        currentPiece.y++;
         distance++;
     }
 
     score += distance * 2;
 
-    lockCurrent();
+    lockPiece();
 }
 
 
-/* =========================
+/* ==============================
    ROTATION
-========================= */
+============================== */
 
 function rotateClockwise(matrix) {
     return matrix[0].map(
-        (_, col) =>
+        (_, column) =>
             matrix
                 .slice()
                 .reverse()
-                .map(row => row[col])
+                .map(row => row[column])
     );
 }
 
 function rotateCounterClockwise(matrix) {
     return matrix[0]
-        .map((_, col) =>
-            matrix.map(row => row[row.length - 1 - col])
+        .map(
+            (_, column) =>
+                matrix.map(
+                    row =>
+                        row[row.length - 1 - column]
+                )
         )
         .reverse();
 }
 
-function rotate(direction) {
-    if (!running || !current) {
+function rotatePiece(direction) {
+    if (!running || !currentPiece) {
         return;
     }
 
-    if (current.type === "O") {
+    if (currentPiece.type === "O") {
         return;
     }
 
     const rotated =
         direction === 1
-            ? rotateClockwise(current.shape)
-            : rotateCounterClockwise(current.shape);
+            ? rotateClockwise(currentPiece.shape)
+            : rotateCounterClockwise(currentPiece.shape);
 
-    const tests = [
+    const kicks = [
         [0, 0],
         [-1, 0],
         [1, 0],
@@ -305,99 +321,117 @@ function rotate(direction) {
         [0, -1]
     ];
 
-    for (const [offsetX, offsetY] of tests) {
+    for (const [offsetX, offsetY] of kicks) {
         if (
-            !collision(
-                current,
+            !isCollision(
+                currentPiece,
                 offsetX,
                 offsetY,
                 rotated
             )
         ) {
-            current.shape = rotated;
-            current.x += offsetX;
-            current.y += offsetY;
+            currentPiece.shape = rotated;
+            currentPiece.x += offsetX;
+            currentPiece.y += offsetY;
 
             draw();
+
             return;
         }
     }
 }
 
 
-/* =========================
+/* ==============================
    HOLD
-========================= */
+============================== */
 
-function holdCurrent() {
-    if (!running || !current || !canHold) {
+function holdCurrentPiece() {
+    if (
+        !running ||
+        !currentPiece ||
+        !canHold
+    ) {
         return;
     }
 
     canHold = false;
 
-    const oldType = current.type;
+    const currentType =
+        currentPiece.type;
 
     if (holdType === null) {
-        holdType = oldType;
-        spawnNext();
+        holdType = currentType;
+
+        spawnPiece();
     } else {
         const swapType = holdType;
-        holdType = oldType;
 
-        current = createPiece(swapType);
+        holdType = currentType;
 
-        if (collision(current)) {
+        currentPiece =
+            createPiece(swapType);
+
+        if (isCollision(currentPiece)) {
             endGame();
             return;
         }
     }
 
-    drawHold();
+    drawHoldPreview();
     draw();
 }
 
 
-/* =========================
+/* ==============================
    SPAWN
-========================= */
+============================== */
 
-function spawnNext() {
-    if (nextType === null) {
-        nextType = getRandomType();
-    }
+function spawnPiece() {
+    currentPiece =
+        createPiece(nextType);
 
-    current = createPiece(nextType);
-    nextType = getRandomType();
+    nextType =
+        getPieceType();
 
-    canHold = true;
-
-    drawNext();
-
-    if (collision(current)) {
+    if (isCollision(currentPiece)) {
         endGame();
-    }
-}
-
-
-/* =========================
-   LOCK
-========================= */
-
-function lockCurrent() {
-    if (!current) {
         return;
     }
 
-    for (let row = 0; row < current.shape.length; row++) {
-        for (let col = 0; col < current.shape[row].length; col++) {
+    drawNextPreview();
+}
 
-            if (!current.shape[row][col]) {
+
+/* ==============================
+   LOCK
+============================== */
+
+function lockPiece() {
+    if (!currentPiece) {
+        return;
+    }
+
+    for (
+        let row = 0;
+        row < currentPiece.shape.length;
+        row++
+    ) {
+        for (
+            let col = 0;
+            col < currentPiece.shape[row].length;
+            col++
+        ) {
+
+            if (!currentPiece.shape[row][col]) {
                 continue;
             }
 
-            const x = current.x + col;
-            const y = current.y + row;
+            const x =
+                currentPiece.x + col;
+
+            const y =
+                currentPiece.y + row;
 
             if (
                 y >= 0 &&
@@ -405,14 +439,17 @@ function lockCurrent() {
                 x >= 0 &&
                 x < COLS
             ) {
-                board[y][x] = current.color;
+                board[y][x] =
+                    currentPiece.color;
             }
         }
     }
 
     clearLines();
 
-    spawnNext();
+    canHold = true;
+
+    spawnPiece();
 
     fallTimer = 0;
 
@@ -421,21 +458,25 @@ function lockCurrent() {
 }
 
 
-/* =========================
-   LINES
-========================= */
+/* ==============================
+   CLEAR LINES
+============================== */
 
 function clearLines() {
     let cleared = 0;
 
-    for (let row = ROWS - 1; row >= 0; row--) {
-
+    for (
+        let row = ROWS - 1;
+        row >= 0;
+        row--
+    ) {
         if (
             board[row].every(
                 cell => cell !== null
             )
         ) {
             board.splice(row, 1);
+
             board.unshift(
                 Array(COLS).fill(null)
             );
@@ -457,7 +498,8 @@ function clearLines() {
     };
 
     score +=
-        (points[cleared] || 0) * level;
+        (points[cleared] || 0) *
+        level;
 
     lines += cleared;
 
@@ -468,41 +510,87 @@ function clearLines() {
 }
 
 
-/* =========================
+/* ==============================
    GRAVITY
-========================= */
+============================== */
 
 function getFallDelay() {
     return Math.max(
         80,
-        900 - (level - 1) * 80
+        900 - ((level - 1) * 80)
     );
 }
 
 function update(deltaTime) {
-    if (!running || !current) {
+    if (!running || !currentPiece) {
         return;
     }
 
     fallTimer += deltaTime;
 
-    if (fallTimer < getFallDelay()) {
+    if (
+        fallTimer <
+        getFallDelay()
+    ) {
         return;
     }
 
     fallTimer = 0;
 
-    if (!collision(current, 0, 1)) {
-        current.y++;
+    if (
+        !isCollision(
+            currentPiece,
+            0,
+            1
+        )
+    ) {
+        currentPiece.y++;
     } else {
-        lockCurrent();
+        lockPiece();
     }
 }
 
 
-/* =========================
+/* ==============================
+   GHOST PIECE
+============================== */
+
+function getGhostPiece() {
+    if (!currentPiece) {
+        return null;
+    }
+
+    const ghost = {
+        type: currentPiece.type,
+        color: currentPiece.color,
+
+        shape:
+            currentPiece.shape.map(
+                row => [...row]
+            ),
+
+        x: currentPiece.x,
+        y: currentPiece.y
+    };
+
+    while (
+        !isCollision(
+            ghost,
+            0,
+            1,
+            ghost.shape
+        )
+    ) {
+        ghost.y++;
+    }
+
+    return ghost;
+}
+
+
+/* ==============================
    DRAWING
-========================= */
+============================== */
 
 function drawBlock(
     context,
@@ -520,22 +608,22 @@ function drawBlock(
     context.fillStyle = color;
 
     context.fillRect(
-        x * BLOCK + 1,
-        y * BLOCK + 1,
-        BLOCK - 2,
-        BLOCK - 2
+        x * BLOCK_SIZE + 1,
+        y * BLOCK_SIZE + 1,
+        BLOCK_SIZE - 2,
+        BLOCK_SIZE - 2
     );
 
     context.globalAlpha = 1;
 
     context.strokeStyle =
-        "rgba(255,255,255,0.18)";
+        "rgba(255,255,255,0.2)";
 
     context.strokeRect(
-        x * BLOCK + 1.5,
-        y * BLOCK + 1.5,
-        BLOCK - 3,
-        BLOCK - 3
+        x * BLOCK_SIZE + 1.5,
+        y * BLOCK_SIZE + 1.5,
+        BLOCK_SIZE - 3,
+        BLOCK_SIZE - 3
     );
 }
 
@@ -548,9 +636,16 @@ function drawPiece(
         return;
     }
 
-    for (let row = 0; row < piece.shape.length; row++) {
-        for (let col = 0; col < piece.shape[row].length; col++) {
-
+    for (
+        let row = 0;
+        row < piece.shape.length;
+        row++
+    ) {
+        for (
+            let col = 0;
+            col < piece.shape[row].length;
+            col++
+        ) {
             if (!piece.shape[row][col]) {
                 continue;
             }
@@ -566,49 +661,49 @@ function drawPiece(
     }
 }
 
-function getGhost() {
-    if (!current) {
-        return null;
-    }
-
-    const ghost = {
-        type: current.type,
-        color: current.color,
-        shape: current.shape.map(row => [...row]),
-        x: current.x,
-        y: current.y
-    };
-
-    while (!collision(ghost, 0, 1, ghost.shape)) {
-        ghost.y++;
-    }
-
-    return ghost;
-}
-
 function drawGrid() {
     ctx.strokeStyle =
         "rgba(148,163,184,0.08)";
 
     ctx.lineWidth = 1;
 
-    for (let x = 0; x <= COLS; x++) {
+    for (
+        let x = 0;
+        x <= COLS;
+        x++
+    ) {
         ctx.beginPath();
-        ctx.moveTo(x * BLOCK, 0);
-        ctx.lineTo(
-            x * BLOCK,
-            ROWS * BLOCK
+
+        ctx.moveTo(
+            x * BLOCK_SIZE,
+            0
         );
+
+        ctx.lineTo(
+            x * BLOCK_SIZE,
+            ROWS * BLOCK_SIZE
+        );
+
         ctx.stroke();
     }
 
-    for (let y = 0; y <= ROWS; y++) {
+    for (
+        let y = 0;
+        y <= ROWS;
+        y++
+    ) {
         ctx.beginPath();
-        ctx.moveTo(0, y * BLOCK);
-        ctx.lineTo(
-            COLS * BLOCK,
-            y * BLOCK
+
+        ctx.moveTo(
+            0,
+            y * BLOCK_SIZE
         );
+
+        ctx.lineTo(
+            COLS * BLOCK_SIZE,
+            y * BLOCK_SIZE
+        );
+
         ctx.stroke();
     }
 }
@@ -621,7 +716,8 @@ function draw() {
         canvas.height
     );
 
-    ctx.fillStyle = "#0B1026";
+    ctx.fillStyle =
+        "#0B1026";
 
     ctx.fillRect(
         0,
@@ -632,9 +728,16 @@ function draw() {
 
     drawGrid();
 
-    for (let row = 0; row < ROWS; row++) {
-        for (let col = 0; col < COLS; col++) {
-
+    for (
+        let row = 0;
+        row < ROWS;
+        row++
+    ) {
+        for (
+            let col = 0;
+            col < COLS;
+            col++
+        ) {
             if (board[row][col]) {
                 drawBlock(
                     ctx,
@@ -646,29 +749,32 @@ function draw() {
         }
     }
 
-    if (current) {
-        const ghost = getGhost();
+    if (!currentPiece) {
+        return;
+    }
 
-        if (ghost) {
-            drawPiece(
-                ctx,
-                ghost,
-                0.15
-            );
-        }
+    const ghost =
+        getGhostPiece();
 
+    if (ghost) {
         drawPiece(
             ctx,
-            current,
-            1
+            ghost,
+            0.15
         );
     }
+
+    drawPiece(
+        ctx,
+        currentPiece,
+        1
+    );
 }
 
 
-/* =========================
-   PREVIEW
-========================= */
+/* ==============================
+   PREVIEWS
+============================== */
 
 function clearPreview(context) {
     context.clearRect(
@@ -678,7 +784,8 @@ function clearPreview(context) {
         context.canvas.height
     );
 
-    context.fillStyle = "#0B1026";
+    context.fillStyle =
+        "#0B1026";
 
     context.fillRect(
         0,
@@ -701,23 +808,38 @@ function drawPreview(
     const shape =
         PIECES[type].shape;
 
-    const size = 24;
+    const previewSize = 24;
 
     const width =
-        shape[0].length * size;
+        shape[0].length *
+        previewSize;
 
     const height =
-        shape.length * size;
+        shape.length *
+        previewSize;
 
     const offsetX =
-        (context.canvas.width - width) / 2;
+        (
+            context.canvas.width -
+            width
+        ) / 2;
 
     const offsetY =
-        (context.canvas.height - height) / 2;
+        (
+            context.canvas.height -
+            height
+        ) / 2;
 
-    for (let row = 0; row < shape.length; row++) {
-        for (let col = 0; col < shape[row].length; col++) {
-
+    for (
+        let row = 0;
+        row < shape.length;
+        row++
+    ) {
+        for (
+            let col = 0;
+            col < shape[row].length;
+            col++
+        ) {
             if (!shape[row][col]) {
                 continue;
             }
@@ -726,23 +848,29 @@ function drawPreview(
                 PIECES[type].color;
 
             context.fillRect(
-                offsetX + col * size + 1,
-                offsetY + row * size + 1,
-                size - 2,
-                size - 2
+                offsetX +
+                    col * previewSize +
+                    1,
+
+                offsetY +
+                    row * previewSize +
+                    1,
+
+                previewSize - 2,
+                previewSize - 2
             );
         }
     }
 }
 
-function drawNext() {
+function drawNextPreview() {
     drawPreview(
         nextCtx,
         nextType
     );
 }
 
-function drawHold() {
+function drawHoldPreview() {
     drawPreview(
         holdCtx,
         holdType
@@ -750,32 +878,45 @@ function drawHold() {
 }
 
 
-/* =========================
+/* ==============================
    HUD
-========================= */
+============================== */
 
 function updateHUD() {
-    scoreDisplay.textContent = score;
-    linesDisplay.textContent = lines;
-    levelDisplay.textContent = level;
+    scoreDisplay.textContent =
+        score;
+
+    linesDisplay.textContent =
+        lines;
+
+    levelDisplay.textContent =
+        level;
 }
 
 
-/* =========================
+/* ==============================
    MUSIC
-========================= */
+============================== */
 
 function updateMusicButton() {
     musicToggle.textContent =
         musicEnabled
             ? "🔊"
             : "🔇";
+
+    musicToggle.setAttribute(
+        "aria-label",
+        musicEnabled
+            ? "Mute music"
+            : "Enable music"
+    );
 }
 
 musicToggle.addEventListener(
     "click",
     () => {
-        musicEnabled = !musicEnabled;
+        musicEnabled =
+            !musicEnabled;
 
         if (!musicEnabled) {
             music.pause();
@@ -796,7 +937,7 @@ function startMusic() {
 
     music.play().catch(error => {
         console.warn(
-            "Music playback blocked:",
+            "Music playback was blocked:",
             error
         );
     });
@@ -808,18 +949,23 @@ function stopMusic() {
 }
 
 
-/* =========================
-   GAME START
-========================= */
+/* ==============================
+   START GAME
+============================== */
 
 function startGame() {
-    if (frameId !== null) {
-        cancelAnimationFrame(frameId);
+    if (animationId !== null) {
+        cancelAnimationFrame(
+            animationId
+        );
+
+        animationId = null;
     }
 
-    board = createBoard();
+    board =
+        createBoard();
 
-    current = null;
+    currentPiece = null;
     nextType = null;
     holdType = null;
 
@@ -832,6 +978,7 @@ function startGame() {
     canHold = true;
 
     fallTimer = 0;
+    lastTime = performance.now();
 
     running = true;
     gameOver = false;
@@ -839,36 +986,34 @@ function startGame() {
     gameOverScreen.hidden = true;
 
     startButton.disabled = true;
-    startButton.textContent = "Playing...";
+    startButton.textContent =
+        "Playing...";
 
     updateHUD();
 
-    refillForStart();
+    drawHoldPreview();
 
-    drawHold();
+    nextType =
+        getPieceType();
 
-    spawnNext();
+    spawnPiece();
+
+    drawNextPreview();
 
     draw();
 
-    lastTime = performance.now();
-
     startMusic();
 
-    frameId =
-        requestAnimationFrame(gameLoop);
-}
-
-function refillForStart() {
-    bag = shuffledBag();
-
-    nextType = bag.shift();
+    animationId =
+        requestAnimationFrame(
+            gameLoop
+        );
 }
 
 
-/* =========================
+/* ==============================
    GAME OVER
-========================= */
+============================== */
 
 function endGame() {
     if (gameOver) {
@@ -878,50 +1023,56 @@ function endGame() {
     gameOver = true;
     running = false;
 
-    if (frameId !== null) {
-        cancelAnimationFrame(frameId);
-        frameId = null;
+    if (animationId !== null) {
+        cancelAnimationFrame(
+            animationId
+        );
+
+        animationId = null;
     }
 
     stopMusic();
 
-    finalScoreDisplay.textContent = score;
+    finalScoreDisplay.textContent =
+        score;
 
     gameOverScreen.hidden = false;
 
     startButton.disabled = false;
-    startButton.textContent = "Start Game";
-
-    draw();
+    startButton.textContent =
+        "Start Game";
 }
 
 
-/* =========================
-   GAME LOOP
-========================= */
+/* ==============================
+   MAIN LOOP
+============================== */
 
-function gameLoop(time) {
+function gameLoop(timestamp) {
     if (!running) {
         return;
     }
 
-    const delta =
-        time - lastTime;
+    const deltaTime =
+        timestamp - lastTime;
 
-    lastTime = time;
+    lastTime =
+        timestamp;
 
-    update(delta);
+    update(deltaTime);
 
     draw();
 
-    frameId =
-        requestAnimationFrame(gameLoop);
+    animationId =
+        requestAnimationFrame(
+            gameLoop
+        );
 }
 
 
-/* =========================
-   KEYBOARD
-========================= */
+/* ==============================
+   KEYBOARD CONTROLS
+============================== */
 
 document.addEventListener(
     "keydown",
@@ -944,24 +1095,26 @@ document.addEventListener(
             event.preventDefault();
         }
 
-        if (key === "a") {
-            moveLeft();
-        }
+        switch (key) {
+            case "a":
+                moveLeft();
+                break;
 
-        if (key === "d") {
-            moveRight();
-        }
+            case "d":
+                moveRight();
+                break;
 
-        if (key === "s") {
-            softDrop();
-        }
+            case "s":
+                softDrop();
+                break;
 
-        if (key === "w") {
-            rotate(1);
-        }
+            case "w":
+                rotatePiece(1);
+                break;
 
-        if (key === "q") {
-            rotate(-1);
+            case "q":
+                rotatePiece(-1);
+                break;
         }
 
         if (event.code === "Space") {
@@ -971,11 +1124,14 @@ document.addEventListener(
 );
 
 
-/* =========================
-   MOBILE BUTTONS
-========================= */
+/* ==============================
+   MOBILE CONTROLS
+============================== */
 
-function bindButton(button, action) {
+function bindControl(
+    button,
+    action
+) {
     button.addEventListener(
         "pointerdown",
         event => {
@@ -985,45 +1141,45 @@ function bindButton(button, action) {
     );
 }
 
-bindButton(
+bindControl(
     moveLeftButton,
     moveLeft
 );
 
-bindButton(
+bindControl(
     moveRightButton,
     moveRight
 );
 
-bindButton(
+bindControl(
     rotateCcwButton,
-    () => rotate(-1)
+    () => rotatePiece(-1)
 );
 
-bindButton(
+bindControl(
     rotateCwButton,
-    () => rotate(1)
+    () => rotatePiece(1)
 );
 
-bindButton(
+bindControl(
     softDropButton,
     softDrop
 );
 
-bindButton(
+bindControl(
     hardDropButton,
     hardDrop
 );
 
-bindButton(
+bindControl(
     holdButton,
-    holdCurrent
+    holdCurrentPiece
 );
 
 
-/* =========================
-   START / RESTART
-========================= */
+/* ==============================
+   BUTTONS
+============================== */
 
 startButton.addEventListener(
     "click",
@@ -1036,13 +1192,13 @@ restartButton.addEventListener(
 );
 
 
-/* =========================
+/* ==============================
    INITIAL STATE
-========================= */
+============================== */
 
 updateHUD();
 updateMusicButton();
 
-drawNext();
-drawHold();
+drawNextPreview();
+drawHoldPreview();
 draw();
