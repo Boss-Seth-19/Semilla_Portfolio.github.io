@@ -2,8 +2,15 @@
     box-sizing: border-box;
 }
 
+html,
 body {
     margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
     min-height: 100vh;
 
     display: flex;
@@ -16,6 +23,8 @@ body {
     color: #F8FAFC;
 
     font-family: Arial, sans-serif;
+
+    overflow-x: hidden;
 }
 
 .tetris-game {
@@ -23,11 +32,11 @@ body {
 }
 
 .game-header {
+    position: relative;
+
     display: flex;
     align-items: center;
     justify-content: center;
-
-    position: relative;
 
     margin-bottom: 20px;
 }
@@ -40,6 +49,7 @@ body {
 
 .music-toggle {
     position: absolute;
+
     right: 0;
 
     width: 42px;
@@ -65,8 +75,8 @@ body {
 
 .game-layout {
     display: flex;
-    justify-content: center;
     align-items: flex-start;
+    justify-content: center;
 
     gap: 25px;
 }
@@ -81,6 +91,7 @@ body {
     padding: 8px;
 
     background: #111936;
+
     border: 2px solid #4F46E5;
     border-radius: 12px;
 }
@@ -108,6 +119,7 @@ body {
     padding: 12px;
 
     background: #111936;
+
     border: 1px solid #252D50;
     border-radius: 10px;
 
@@ -118,8 +130,9 @@ body {
 .piece-box h2 {
     margin: 0 0 6px;
 
-    font-size: 14px;
     color: #94A3B8;
+
+    font-size: 14px;
 
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -141,11 +154,14 @@ body {
     margin: 0 auto;
 
     background: #0B1026;
+
     border-radius: 6px;
 }
 
 .start-button,
 #restart-button {
+    width: 100%;
+
     padding: 12px 16px;
 
     border: 1px solid #4F46E5;
@@ -173,6 +189,7 @@ body {
     padding: 25px;
 
     background: #111936;
+
     border: 1px solid #7C3AED;
     border-radius: 12px;
 
@@ -194,34 +211,38 @@ body {
 .desktop-controls {
     margin: 18px 0 0;
 
-    text-align: center;
-
     color: #94A3B8;
+
     font-size: 13px;
+
+    text-align: center;
 }
 
 .mobile-controls {
     display: none;
 
-    margin-top: 15px;
+    width: 100%;
+
+    margin-top: 10px;
 
     flex-direction: column;
-    gap: 8px;
+    align-items: center;
 
-    width: 100%;
+    gap: 6px;
 }
 
 .control-row {
     display: flex;
     justify-content: center;
-    gap: 8px;
+
+    gap: 6px;
 }
 
 .mobile-controls button {
-    min-width: 58px;
-    min-height: 48px;
+    min-width: 50px;
+    min-height: 44px;
 
-    padding: 10px 14px;
+    padding: 8px 12px;
 
     border: 1px solid #4F46E5;
     border-radius: 8px;
@@ -229,61 +250,122 @@ body {
     background: #111936;
     color: #F8FAFC;
 
-    font-size: 18px;
+    font-size: 17px;
     font-weight: bold;
 
     cursor: pointer;
 
     touch-action: manipulation;
     user-select: none;
+
+    transition: 0.15s ease;
 }
 
 .mobile-controls button:active {
     background: #4F46E5;
+    transform: scale(0.96);
 }
 
 #hold-piece {
-    min-width: 120px;
+    min-width: 110px;
 
-    font-size: 14px;
+    font-size: 13px;
 }
 
+
+/* =========================================
+   MOBILE
+========================================= */
+
 @media (max-width: 700px) {
+
     body {
-        padding: 12px;
+        padding: 8px;
+        align-items: flex-start;
+    }
+
+    .tetris-game {
+        width: 100%;
+        max-width: 360px;
+        margin: 0 auto;
     }
 
     .game-header {
-        margin-bottom: 14px;
+        margin-bottom: 8px;
     }
 
     .game-header h1 {
-        font-size: 28px;
+        font-size: 24px;
+    }
+
+    .music-toggle {
+        width: 36px;
+        height: 36px;
+
+        font-size: 16px;
     }
 
     .game-layout {
         flex-direction: column;
         align-items: center;
 
-        gap: 15px;
+        gap: 8px;
+    }
+
+    .board-section {
+        width: 100%;
+    }
+
+    .board-wrapper {
+        padding: 4px;
+    }
+
+    /*
+        10x20 ratio is preserved.
+        The board simply gets smaller on phones.
+    */
+    #tetris-board {
+        width: 240px;
+        height: 480px;
     }
 
     .game-info {
         width: 100%;
 
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
 
-        gap: 8px;
+        grid-template-columns:
+            repeat(3, 1fr);
+
+        gap: 6px;
     }
 
+    .info-box,
     .piece-box {
-        grid-column: span 1;
+        padding: 7px;
+    }
+
+    .info-box h2,
+    .piece-box h2 {
+        margin-bottom: 3px;
+
+        font-size: 10px;
+    }
+
+    .info-box p {
+        font-size: 17px;
     }
 
     .piece-box canvas {
-        width: 90px;
-        height: 90px;
+        width: 60px;
+        height: 60px;
+    }
+
+    /*
+        Put Next and Hold beside each other.
+    */
+    .piece-box {
+        grid-column: span 1;
     }
 
     .start-button {
@@ -297,25 +379,70 @@ body {
     .desktop-controls {
         display: none;
     }
-}
 
-@media (max-width: 420px) {
-    #tetris-board {
-        width: min(300px, 86vw);
-        height: auto;
-        aspect-ratio: 1 / 2;
+    .game-over-screen {
+        margin-top: 10px;
+        padding: 18px;
     }
 
-    .game-info {
-        grid-template-columns: repeat(3, 1fr);
+    .game-over-screen h2 {
+        font-size: 24px;
+    }
+}
+
+
+/* =========================================
+   SMALL PHONES
+========================================= */
+
+@media (max-width: 380px) {
+
+    body {
+        padding: 5px;
+    }
+
+    .tetris-game {
+        max-width: 320px;
+    }
+
+    .game-header h1 {
+        font-size: 22px;
+    }
+
+    #tetris-board {
+        width: 210px;
+        height: 420px;
+    }
+
+    .info-box,
+    .piece-box {
+        padding: 5px;
+    }
+
+    .info-box h2,
+    .piece-box h2 {
+        font-size: 9px;
     }
 
     .info-box p {
-        font-size: 18px;
+        font-size: 15px;
+    }
+
+    .piece-box canvas {
+        width: 50px;
+        height: 50px;
     }
 
     .mobile-controls button {
-        min-width: 52px;
-        min-height: 46px;
+        min-width: 44px;
+        min-height: 40px;
+
+        padding: 6px 9px;
+
+        font-size: 15px;
+    }
+
+    #hold-piece {
+        min-width: 95px;
     }
 }
