@@ -623,6 +623,48 @@ body {
     border-radius: 5px;
 }
 
+.project-info {
+    padding: 25px;
+}
+
+.project-info > span {
+    color: #7C3AED;
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.project-info h3 {
+    margin: 10px 0;
+    font-size: 25px;
+}
+
+.project-info p {
+    color: #94A3B8;
+    line-height: 1.6;
+}
+
+.project-info button {
+    margin-top: 10px;
+    padding: 10px 18px;
+
+    background-color: #4F46E5;
+    color: #F8FAFC;
+
+    border: none;
+    border-radius: 8px;
+
+    cursor: pointer;
+    font-size: 14px;
+
+    transition: 0.3s ease;
+}
+
+.project-info button:hover {
+    background-color: #7C3AED;
+}
+
 /* ==============================
    TETRIS PREVIEW
 ============================== */
@@ -705,48 +747,6 @@ body {
 
     text-shadow:
         0 0 8px rgba(124, 58, 237, 0.8);
-}
-
-.project-info {
-    padding: 25px;
-}
-
-.project-info > span {
-    color: #7C3AED;
-    font-size: 13px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.project-info h3 {
-    margin: 10px 0;
-    font-size: 25px;
-}
-
-.project-info p {
-    color: #94A3B8;
-    line-height: 1.6;
-}
-
-.project-info button {
-    margin-top: 10px;
-    padding: 10px 18px;
-
-    background-color: #4F46E5;
-    color: #F8FAFC;
-
-    border: none;
-    border-radius: 8px;
-
-    cursor: pointer;
-    font-size: 14px;
-
-    transition: 0.3s ease;
-}
-
-.project-info button:hover {
-    background-color: #7C3AED;
 }
 
 /* Game Modal */
