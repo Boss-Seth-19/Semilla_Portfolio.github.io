@@ -7,6 +7,7 @@ const snakeButton = document.getElementById("snake-button");
 const rockPaperScissorsButton = document.getElementById("rock-paper-scissors-button");
 const hangmanButton = document.getElementById("hangman-button");
 const brickBreakerButton = document.getElementById("brick-breaker-button");
+const tetrisButton = document.getElementById("tetris-button");
 
 connectFourButton.addEventListener("click", function () {
     connectFourFrame.src = "projects/connect-four/index.html";
@@ -36,6 +37,14 @@ hangmanButton.addEventListener("click", function () {
 brickBreakerButton.addEventListener("click", function () {
     connectFourFrame.src = "projects/brick-breaker/index.html";
     gameModal.style.display = "flex";
+});
+
+tetrisButton.addEventListener("click", function () {
+
+    connectFourFrame.src = "./projects/tetris/";
+
+    gameModal.style.display = "flex";
+
 });
 
 closeGameModal.addEventListener("click", function () {
