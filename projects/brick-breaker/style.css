@@ -2,8 +2,13 @@
     box-sizing: border-box;
 }
 
+html,
 body {
     margin: 0;
+    min-height: 100%;
+}
+
+body {
     min-height: 100vh;
 
     display: flex;
@@ -17,6 +22,8 @@ body {
     color: #F8FAFC;
 
     font-family: Arial, sans-serif;
+
+    overflow-x: hidden;
 }
 
 h1 {
@@ -47,7 +54,15 @@ h1 {
     border: 3px solid #7C3AED;
     border-radius: 12px;
 
-    box-shadow: 0 0 30px rgba(124, 58, 237, 0.18);
+    box-shadow:
+        0 0 30px
+        rgba(124, 58, 237, 0.18);
+
+    /*
+        Prevent browser gestures from
+        interfering with paddle control.
+    */
+    touch-action: none;
 }
 
 .controls {
@@ -66,7 +81,8 @@ h1 {
     text-align: center;
 }
 
-#restart-button {
+#restart-button,
+#mobile-launch-button {
     padding: 12px 24px;
 
     background: #4F46E5;
@@ -81,27 +97,78 @@ h1 {
     cursor: pointer;
 
     transition: 0.2s ease;
+
+    touch-action: manipulation;
 }
 
-#restart-button:hover {
+#restart-button:hover,
+#mobile-launch-button:hover {
     background: #7C3AED;
     transform: translateY(-2px);
 }
 
-#restart-button:active {
+#restart-button:active,
+#mobile-launch-button:active {
     transform: translateY(0);
 }
 
+#mobile-launch-button {
+    display: none;
+
+    margin-top: 12px;
+
+    min-width: 130px;
+    min-height: 44px;
+
+    font-size: 15px;
+}
+
 @media (max-width: 650px) {
+
     body {
-        padding: 20px 10px;
+        padding: 20px 10px 25px;
     }
 
     h1 {
         font-size: 27px;
     }
 
+    #status {
+        margin-bottom: 14px;
+        font-size: 15px;
+    }
+
     #game-board {
         width: 94vw;
+    }
+
+    #mobile-launch-button {
+        display: block;
+    }
+
+    .controls {
+        margin-top: 12px;
+    }
+
+    .controls p {
+        font-size: 13px;
+        margin-bottom: 12px;
+    }
+
+    #restart-button {
+        min-height: 44px;
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 380px) {
+
+    body {
+        padding-left: 6px;
+        padding-right: 6px;
+    }
+
+    #game-board {
+        width: 96vw;
     }
 }

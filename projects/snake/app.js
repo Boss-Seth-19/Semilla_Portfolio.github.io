@@ -14,6 +14,7 @@ let nextDirection;
 let score;
 let gameLoop;
 let gameActive = false;
+let gameStarted = false;
 
 
 /* =========================================================
@@ -156,11 +157,20 @@ function prepareGame() {
         y: Math.floor(Math.random() * tileCount)
     };
 
-    direction = { x: 0, y: 0 };
-    nextDirection = { x: 0, y: 0 };
+    direction = {
+        x: 0,
+        y: 0
+    };
+
+    nextDirection = {
+        x: 0,
+        y: 0
+    };
 
     score = 0;
+
     gameActive = false;
+    gameStarted = false;
 
     clearInterval(gameLoop);
 
@@ -174,6 +184,7 @@ function prepareGame() {
 
 function startGame() {
     gameActive = true;
+    gameStarted = true;
 
     status.textContent =
         `Score: ${score}`;
@@ -194,6 +205,19 @@ function startGame() {
 
 function updateGame() {
     direction = nextDirection;
+
+    /*
+        No movement direction yet.
+        This can only happen briefly before
+        the first valid input starts the game.
+    */
+    if (
+        direction.x === 0 &&
+        direction.y === 0
+    ) {
+        drawGame();
+        return;
+    }
 
     const head = {
         x:
@@ -306,7 +330,6 @@ function checkCollision(head) {
 ========================================================= */
 
 function placeFood() {
-
     do {
         food = {
             x:
@@ -349,6 +372,55 @@ function endGame() {
 
 
 /* =========================================================
+   DIRECTION CONTROL
+========================================================= */
+
+function setDirection(x, y) {
+
+    /*
+        After game over, ignore movement input.
+        Restart button is required.
+    */
+    if (
+        gameStarted &&
+        !gameActive
+    ) {
+        return;
+    }
+
+    /*
+        Prevent immediate 180-degree turns.
+    */
+    if (
+        x !== 0 &&
+        direction.x === -x
+    ) {
+        return;
+    }
+
+    if (
+        y !== 0 &&
+        direction.y === -y
+    ) {
+        return;
+    }
+
+    nextDirection = {
+        x,
+        y
+    };
+
+    /*
+        Only the initial movement starts
+        a freshly prepared game.
+    */
+    if (!gameStarted) {
+        startGame();
+    }
+}
+
+
+/* =========================================================
    KEYBOARD CONTROLS
 ========================================================= */
 
@@ -367,46 +439,179 @@ document.addEventListener(
 
         event.preventDefault();
 
-        /*
-            Start game on first valid
-            movement key.
-        */
-        if (!gameActive) {
-            startGame();
-        }
-
-        /*
-            Prevent immediate 180-degree turns.
-        */
-
         if (key === "w") {
-            if (direction.y !== 1) {
-                nextDirection =
-                    { x: 0, y: -1 };
-            }
+            setDirection(0, -1);
         }
 
         if (key === "s") {
-            if (direction.y !== -1) {
-                nextDirection =
-                    { x: 0, y: 1 };
-            }
+            setDirection(0, 1);
         }
 
         if (key === "a") {
-            if (direction.x !== 1) {
-                nextDirection =
-                    { x: -1, y: 0 };
-            }
+            setDirection(-1, 0);
         }
 
         if (key === "d") {
-            if (direction.x !== -1) {
-                nextDirection =
-                    { x: 1, y: 0 };
-            }
+            setDirection(1, 0);
         }
     }
+);
+
+
+/* =========================================================
+   MOBILE D-PAD
+========================================================= */
+
+function createMobileControls() {
+    const controls =
+        document.createElement("div");
+
+    controls.id =
+        "mobile-controls";
+
+    controls.innerHTML = `
+        <button
+            class="snake-control up"
+            data-x="0"
+            data-y="-1"
+            aria-label="Move up">
+            ▲
+        </button>
+
+        <button
+            class="snake-control left"
+            data-x="-1"
+            data-y="0"
+            aria-label="Move left">
+            ◀
+        </button>
+
+        <div class="snake-control-center">
+            ●
+        </div>
+
+        <button
+            class="snake-control right"
+            data-x="1"
+            data-y="0"
+            aria-label="Move right">
+            ▶
+        </button>
+
+        <button
+            class="snake-control down"
+            data-x="0"
+            data-y="1"
+            aria-label="Move down">
+            ▼
+        </button>
+    `;
+
+    document.body.appendChild(
+        controls
+    );
+
+    const buttons =
+        controls.querySelectorAll(
+            ".snake-control"
+        );
+
+    buttons.forEach(button => {
+        const x =
+            Number(
+                button.dataset.x
+            );
+
+        const y =
+            Number(
+                button.dataset.y
+            );
+
+        button.addEventListener(
+            "pointerdown",
+            event => {
+                event.preventDefault();
+
+                setDirection(x, y);
+            }
+        );
+    });
+}
+
+
+/* =========================================================
+   SWIPE CONTROLS
+========================================================= */
+
+let touchStartX = 0;
+let touchStartY = 0;
+
+canvas.addEventListener(
+    "touchstart",
+    event => {
+        const touch =
+            event.changedTouches[0];
+
+        touchStartX =
+            touch.clientX;
+
+        touchStartY =
+            touch.clientY;
+    },
+    { passive: true }
+);
+
+canvas.addEventListener(
+    "touchmove",
+    event => {
+        event.preventDefault();
+    },
+    { passive: false }
+);
+
+canvas.addEventListener(
+    "touchend",
+    event => {
+        const touch =
+            event.changedTouches[0];
+
+        const deltaX =
+            touch.clientX -
+            touchStartX;
+
+        const deltaY =
+            touch.clientY -
+            touchStartY;
+
+        const minSwipeDistance = 25;
+
+        if (
+            Math.abs(deltaX) <
+                minSwipeDistance &&
+            Math.abs(deltaY) <
+                minSwipeDistance
+        ) {
+            return;
+        }
+
+        if (
+            Math.abs(deltaX) >
+            Math.abs(deltaY)
+        ) {
+            if (deltaX > 0) {
+                setDirection(1, 0);
+            } else {
+                setDirection(-1, 0);
+            }
+        } else {
+            if (deltaY > 0) {
+                setDirection(0, 1);
+            } else {
+                setDirection(0, -1);
+            }
+        }
+    },
+    { passive: true }
 );
 
 
@@ -421,7 +626,9 @@ restartButton.addEventListener(
 
 
 /* =========================================================
-   INITIAL
+   INITIALIZATION
 ========================================================= */
+
+createMobileControls();
 
 prepareGame();
