@@ -973,3 +973,212 @@ body {
     background: #7C3AED;
     transform: scale(1.05);
 }
+
+/* =========================================================
+   MOBILE RESPONSIVE ADDITIONS
+   Does not change existing desktop styling
+========================================================= */
+
+@media (max-width: 1000px) {
+
+    .projects-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .projects-section {
+        padding-left: 6%;
+        padding-right: 6%;
+    }
+
+    .education-section,
+    .about-section {
+        padding-left: 6%;
+        padding-right: 6%;
+    }
+}
+
+
+@media (max-width: 700px) {
+
+    html,
+    body {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* Navigation */
+
+    .navbar {
+        flex-wrap: wrap;
+        gap: 18px;
+        padding: 18px 12px;
+    }
+
+    .navbar a {
+        font-size: 15px;
+    }
+
+
+    /* Hero */
+
+    .hero {
+        min-height: 85vh;
+        padding: 30px 18px;
+    }
+
+    .hero-content h1 {
+        font-size: 42px;
+        line-height: 1.1;
+    }
+
+
+    /* About */
+
+    .about-section {
+        min-height: auto;
+        padding: 65px 6%;
+    }
+
+    .section-content h2 {
+        font-size: 34px;
+    }
+
+    .section-content p {
+        font-size: 16px;
+        line-height: 1.7;
+    }
+
+
+    /* Section titles */
+
+    .section-title {
+        margin-bottom: 35px;
+    }
+
+    .section-title h2 {
+        font-size: 34px;
+    }
+
+    .section-title p {
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+
+    /* Education */
+
+    .education-section {
+        padding: 70px 5%;
+    }
+
+    .education-card {
+        flex-direction: column;
+    }
+
+    .school-image {
+        width: 100%;
+        height: 200px;
+        min-height: 200px;
+    }
+
+    .school-info {
+        padding: 25px 20px;
+    }
+
+    .school-info h3 {
+        font-size: 24px;
+    }
+
+
+    /* Arcade */
+
+    .projects-section {
+        padding: 70px 5%;
+    }
+
+    .projects-container {
+        grid-template-columns: 1fr;
+        width: 100%;
+        gap: 20px;
+    }
+
+    .project-card {
+        width: 100%;
+    }
+
+    .project-preview {
+        height: 200px;
+        padding: 10px;
+    }
+
+    .project-info {
+        padding: 22px 20px;
+    }
+
+    .project-info h3 {
+        font-size: 23px;
+    }
+
+    .project-info p {
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    .project-info button {
+        width: 100%;
+        min-height: 44px;
+        padding: 11px 18px;
+        font-size: 15px;
+    }
+
+
+    /* Game modal */
+
+    .game-modal {
+        padding: 8px;
+    }
+
+    .game-modal-content {
+        width: calc(100vw - 16px);
+        height: calc(100vh - 16px);
+        border-radius: 14px;
+    }
+
+    .close-game-modal {
+        width: 40px;
+        height: 40px;
+        top: 8px;
+        right: 8px;
+    }
+}
+
+
+@media (max-width: 420px) {
+
+    .navbar {
+        gap: 14px;
+    }
+
+    .navbar a {
+        font-size: 14px;
+    }
+
+    .hero-content h1 {
+        font-size: 36px;
+    }
+
+    .section-title h2,
+    .section-content h2 {
+        font-size: 30px;
+    }
+
+    .projects-section {
+        padding-left: 4%;
+        padding-right: 4%;
+    }
+
+    .project-preview {
+        height: 190px;
+    }
+}
