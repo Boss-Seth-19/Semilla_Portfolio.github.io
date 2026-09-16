@@ -9,11 +9,12 @@ const audioToggle = document.getElementById("audio-toggle");
 
 let audioMuted = false;
 let audioContext = null;
+let portfolioStarted = false;
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    STARTUP SOUND
---------------------------------------------------------- */
+========================================================= */
 
 function playStartSound() {
 
@@ -81,23 +82,213 @@ function playStartSound() {
         );
 
     }
+
 }
 
 
-/* ---------------------------------------------------------
+/* =========================================================
+   PIXEL REVEAL
+========================================================= */
+
+function createPixelReveal() {
+
+    const pixelLayer = document.createElement("div");
+
+    pixelLayer.className = "pixel-reveal-layer";
+
+    document.body.appendChild(pixelLayer);
+
+
+    /*
+        Chunky pixel size.
+
+        Smaller screens use smaller pixels so the
+        transition still covers the screen properly.
+    */
+
+    let pixelSize = 32;
+
+    if (window.innerWidth <= 900) {
+        pixelSize = 28;
+    }
+
+    if (window.innerWidth <= 700) {
+        pixelSize = 24;
+    }
+
+    if (window.innerWidth <= 450) {
+        pixelSize = 20;
+    }
+
+
+    const columns = Math.ceil(
+        window.innerWidth / pixelSize
+    );
+
+    const rows = Math.ceil(
+        window.innerHeight / pixelSize
+    );
+
+    const pixels = [];
+
+
+    /* =====================================================
+       CREATE FULL PIXEL GRID
+    ===================================================== */
+
+    for (let row = 0; row < rows; row++) {
+
+        for (let column = 0; column < columns; column++) {
+
+            const pixel = document.createElement("div");
+
+            pixel.className = "pixel-reveal";
+
+            pixel.style.width =
+                pixelSize + "px";
+
+            pixel.style.height =
+                pixelSize + "px";
+
+            pixel.style.left =
+                (column * pixelSize) + "px";
+
+            pixel.style.top =
+                (row * pixelSize) + "px";
+
+            pixels.push(pixel);
+
+        }
+
+    }
+
+
+    /* =====================================================
+       SHUFFLE PIXELS
+    ===================================================== */
+
+    for (
+        let i = pixels.length - 1;
+        i > 0;
+        i--
+    ) {
+
+        const randomIndex =
+            Math.floor(
+                Math.random() * (i + 1)
+            );
+
+        const temporary =
+            pixels[i];
+
+        pixels[i] =
+            pixels[randomIndex];
+
+        pixels[randomIndex] =
+            temporary;
+
+    }
+
+
+    /* =====================================================
+       CONFIGURE EACH PIXEL
+    ===================================================== */
+
+    pixels.forEach(function (pixel, index) {
+
+        /*
+            Earlier pixels disappear sooner.
+
+            Later pixels stay on screen longer,
+            creating a chaotic breakup instead of
+            everything disappearing simultaneously.
+        */
+
+        const progress =
+            index / pixels.length;
+
+        const randomDelay =
+            (progress * 1.05) +
+            (Math.random() * 0.35);
+
+
+        /*
+            Give every pixel slightly different
+            movement when it breaks apart.
+        */
+
+        const randomX =
+            (Math.random() - 0.5) * 80;
+
+        const randomY =
+            (Math.random() - 0.5) * 80;
+
+        const randomRotation =
+            (Math.random() - 0.5) * 30;
+
+        const randomScale =
+            0.05 +
+            (Math.random() * 0.15);
+
+
+        pixel.style.setProperty(
+            "--pixel-x",
+            randomX + "px"
+        );
+
+        pixel.style.setProperty(
+            "--pixel-y",
+            randomY + "px"
+        );
+
+        pixel.style.setProperty(
+            "--pixel-rotation",
+            randomRotation + "deg"
+        );
+
+        pixel.style.setProperty(
+            "--pixel-scale",
+            randomScale
+        );
+
+
+        pixel.style.animationDelay =
+            randomDelay + "s";
+
+
+        pixel.style.animationDuration =
+            (0.22 + Math.random() * 0.18) + "s";
+
+
+        pixelLayer.appendChild(pixel);
+
+    });
+
+
+    return pixelLayer;
+
+}
+
+
+/* =========================================================
    START PORTFOLIO
---------------------------------------------------------- */
+========================================================= */
 
 function startPortfolio() {
 
-    if (!introScreen) {
+    if (portfolioStarted) {
         return;
     }
+
+    portfolioStarted = true;
+
+
+    /* Start arcade startup sound */
 
     playStartSound();
 
 
-    /* Start music only after user interaction */
+    /* Start background music */
 
     if (!audioMuted && backgroundMusic) {
 
@@ -117,32 +308,84 @@ function startPortfolio() {
     }
 
 
-    /* Disable repeated clicking */
+    /* Prevent repeated Press Start clicks */
 
     if (pressStart) {
         pressStart.style.pointerEvents = "none";
     }
 
 
-    /* Begin intro fade */
+    /*
+        IMPORTANT:
 
-    introScreen.classList.add("intro-hide");
+        The pixel grid is created while the intro
+        is still completely visible.
+
+        This prevents the website underneath from
+        being exposed before the transition starts.
+    */
+
+    const pixelLayer =
+        createPixelReveal();
 
 
-    /* Remove intro after animation */
+    /*
+        Wait for the browser to paint the complete
+        pixel layer before hiding the original intro.
+    */
+
+    requestAnimationFrame(function () {
+
+        requestAnimationFrame(function () {
+
+            if (introScreen) {
+
+                introScreen.style.visibility =
+                    "hidden";
+
+                introScreen.style.pointerEvents =
+                    "none";
+
+            }
+
+        });
+
+    });
+
+
+    /*
+        The final pixels finish disappearing around
+        1.8 seconds.
+
+        Wait slightly longer before removing the
+        pixel layer completely.
+    */
 
     setTimeout(function () {
 
-        introScreen.style.display = "none";
+        if (pixelLayer) {
+            pixelLayer.remove();
+        }
 
-    }, 900);
+        if (introScreen) {
+
+            introScreen.style.display =
+                "none";
+
+        }
+
+        document.body.classList.remove(
+            "intro-active"
+        );
+
+    }, 1900);
 
 }
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    PRESS START
---------------------------------------------------------- */
+========================================================= */
 
 if (pressStart) {
 
@@ -154,9 +397,9 @@ if (pressStart) {
 }
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    AUDIO TOGGLE
---------------------------------------------------------- */
+========================================================= */
 
 if (audioToggle) {
 
@@ -166,28 +409,28 @@ if (audioToggle) {
 
             audioMuted = !audioMuted;
 
+            if (!backgroundMusic) {
+                return;
+            }
 
-            if (backgroundMusic) {
 
-                if (audioMuted) {
+            if (audioMuted) {
 
-                    backgroundMusic.pause();
+                backgroundMusic.pause();
 
-                    audioToggle.textContent = "🔇";
+                audioToggle.textContent = "🔇";
 
-                } else {
+            } else {
 
-                    backgroundMusic.play().catch(function () {
+                backgroundMusic.play().catch(function () {
 
-                        console.log(
-                            "Music could not resume."
-                        );
+                    console.log(
+                        "Music could not resume."
+                    );
 
-                    });
+                });
 
-                    audioToggle.textContent = "🔊";
-
-                }
+                audioToggle.textContent = "🔊";
 
             }
 
@@ -240,170 +483,222 @@ const minesweeperButton =
     document.getElementById("minesweeper-button");
 
 
-/* ---------------------------------------------------------
+/* =========================================================
+   OPEN GAME
+========================================================= */
+
+function openGame(gamePath) {
+
+    if (!connectFourFrame || !gameModal) {
+        return;
+    }
+
+    connectFourFrame.src = gamePath;
+
+    gameModal.style.display = "flex";
+
+}
+
+
+/* =========================================================
    CONNECT FOUR
---------------------------------------------------------- */
+========================================================= */
 
-connectFourButton.addEventListener(
-    "click",
-    function () {
+if (connectFourButton) {
 
-        connectFourFrame.src =
-            "projects/connect-four/index.html";
+    connectFourButton.addEventListener(
+        "click",
+        function () {
 
-        gameModal.style.display = "flex";
+            openGame(
+                "projects/connect-four/index.html"
+            );
 
-    }
-);
+        }
+    );
+
+}
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    TIC TAC TOE
---------------------------------------------------------- */
+========================================================= */
 
-ticTacToeButton.addEventListener(
-    "click",
-    function () {
+if (ticTacToeButton) {
 
-        connectFourFrame.src =
-            "projects/tic-tac-toe/index.html";
+    ticTacToeButton.addEventListener(
+        "click",
+        function () {
 
-        gameModal.style.display = "flex";
+            openGame(
+                "projects/tic-tac-toe/index.html"
+            );
 
-    }
-);
+        }
+    );
+
+}
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    SNAKE
---------------------------------------------------------- */
+========================================================= */
 
-snakeButton.addEventListener(
-    "click",
-    function () {
+if (snakeButton) {
 
-        connectFourFrame.src =
-            "projects/snake/index.html";
+    snakeButton.addEventListener(
+        "click",
+        function () {
 
-        gameModal.style.display = "flex";
+            openGame(
+                "projects/snake/index.html"
+            );
 
-    }
-);
+        }
+    );
+
+}
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    ROCK PAPER SCISSORS
---------------------------------------------------------- */
+========================================================= */
 
-rockPaperScissorsButton.addEventListener(
-    "click",
-    function () {
+if (rockPaperScissorsButton) {
 
-        connectFourFrame.src =
-            "projects/rock-paper-scissors/index.html";
+    rockPaperScissorsButton.addEventListener(
+        "click",
+        function () {
 
-        gameModal.style.display = "flex";
+            openGame(
+                "projects/rock-paper-scissors/index.html"
+            );
 
-    }
-);
+        }
+    );
+
+}
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    HANGMAN
---------------------------------------------------------- */
+========================================================= */
 
-hangmanButton.addEventListener(
-    "click",
-    function () {
+if (hangmanButton) {
 
-        connectFourFrame.src =
-            "projects/hangman/index.html";
+    hangmanButton.addEventListener(
+        "click",
+        function () {
 
-        gameModal.style.display = "flex";
+            openGame(
+                "projects/hangman/index.html"
+            );
 
-    }
-);
+        }
+    );
+
+}
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    BRICK BREAKER
---------------------------------------------------------- */
+========================================================= */
 
-brickBreakerButton.addEventListener(
-    "click",
-    function () {
+if (brickBreakerButton) {
 
-        connectFourFrame.src =
-            "projects/brick-breaker/index.html";
+    brickBreakerButton.addEventListener(
+        "click",
+        function () {
 
-        gameModal.style.display = "flex";
+            openGame(
+                "projects/brick-breaker/index.html"
+            );
 
-    }
-);
+        }
+    );
+
+}
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    TETRIS
---------------------------------------------------------- */
+========================================================= */
 
-tetrisButton.addEventListener(
-    "click",
-    function () {
+if (tetrisButton) {
 
-        connectFourFrame.src =
-            "./projects/tetris/";
+    tetrisButton.addEventListener(
+        "click",
+        function () {
 
-        gameModal.style.display = "flex";
+            openGame(
+                "./projects/tetris/"
+            );
 
-    }
-);
+        }
+    );
+
+}
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    PONG
---------------------------------------------------------- */
+========================================================= */
 
-pongButton.addEventListener(
-    "click",
-    function () {
+if (pongButton) {
 
-        connectFourFrame.src =
-            "./projects/pong/";
+    pongButton.addEventListener(
+        "click",
+        function () {
 
-        gameModal.style.display = "flex";
+            openGame(
+                "./projects/pong/"
+            );
 
-    }
-);
+        }
+    );
+
+}
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    MINESWEEPER
---------------------------------------------------------- */
+========================================================= */
 
-minesweeperButton.addEventListener(
-    "click",
-    function () {
+if (minesweeperButton) {
 
-        connectFourFrame.src =
-            "./projects/minesweeper/";
+    minesweeperButton.addEventListener(
+        "click",
+        function () {
 
-        gameModal.style.display = "flex";
+            openGame(
+                "./projects/minesweeper/"
+            );
 
-    }
-);
+        }
+    );
+
+}
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    CLOSE GAME MODAL
---------------------------------------------------------- */
+========================================================= */
 
-closeGameModal.addEventListener(
-    "click",
-    function () {
+if (closeGameModal) {
 
-        gameModal.style.display = "none";
+    closeGameModal.addEventListener(
+        "click",
+        function () {
 
-        connectFourFrame.src = "";
+            if (gameModal) {
+                gameModal.style.display = "none";
+            }
 
-    }
-);
+            if (connectFourFrame) {
+                connectFourFrame.src = "";
+            }
+
+        }
+    );
+
+}
