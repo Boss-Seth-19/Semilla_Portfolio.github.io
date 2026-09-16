@@ -759,11 +759,46 @@ GRAVITY
 */
 
 function getFallDelay() {
-    return Math.max(
-        80,
-        900 -
-        ((level - 1) * 80)
-    );
+    const gravityFrames = [
+        48, // level 0
+        43, // level 1
+        38, // level 2
+        33, // level 3
+        28, // level 4
+        23, // level 5
+        18, // level 6
+        13, // level 7
+        8,  // level 8
+        6,  // level 9
+        5,  // level 10
+        5,  // level 11
+        5,  // level 12
+        4,  // level 13
+        4,  // level 14
+        4,  // level 15
+        3,  // level 16
+        3,  // level 17
+        3,  // level 18
+        2,  // level 19
+        2,  // level 20
+        2,  // level 21
+        2,  // level 22
+        2,  // level 23
+        2,  // level 24
+        2,  // level 25
+        2,  // level 26
+        2,  // level 27
+        2,  // level 28
+        1   // level 29
+    ];
+
+    const index =
+        Math.min(level, gravityFrames.length - 1);
+
+    const framesPerCell =
+        gravityFrames[index];
+
+    return framesPerCell * (1000 / 60);
 }
 
 function update(deltaTime) {
