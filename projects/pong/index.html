@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Pong</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main class="pong-game">
+
+        <header class="game-header">
+            <h1>Pong</h1>
+        </header>
+
+        <section class="scoreboard">
+
+            <div class="score-box">
+                <span>Player</span>
+                <strong id="player-score">0</strong>
+            </div>
+
+            <div class="score-box">
+                <span>CPU</span>
+                <strong id="cpu-score">0</strong>
+            </div>
+
+        </section>
+
+        <section class="game-area">
+
+            <canvas
+                id="pong-board"
+                width="800"
+                height="450">
+            </canvas>
+
+        </section>
+
+        <section class="controls">
+
+            <p class="desktop-controls">
+                W = Up &nbsp; • &nbsp;
+                S = Down
+            </p>
+
+            <div class="mobile-controls">
+
+                <button
+                    id="move-up"
+                    type="button">
+                    ▲
+                </button>
+
+                <button
+                    id="move-down"
+                    type="button">
+                    ▼
+                </button>
+
+            </div>
+
+        </section>
+
+        <section class="game-status">
+
+            <p id="status-text">
+                Press Start to Play
+            </p>
+
+            <button
+                id="start-button"
+                type="button">
+                Start Game
+            </button>
+
+        </section>
+
+        <section
+            id="game-over-screen"
+            class="game-over-screen"
+            hidden>
+
+            <h2 id="game-result">
+                GAME OVER
+            </h2>
+
+            <p>
+                Final Score:
+                <span id="final-score">
+                    0 - 0
+                </span>
+            </p>
+
+            <button
+                id="restart-button"
+                type="button">
+                Restart
+            </button>
+
+        </section>
+
+    </main>
+
+    <script src="app.js"></script>
+
+</body>
+</html>

@@ -8,6 +8,7 @@ const rockPaperScissorsButton = document.getElementById("rock-paper-scissors-but
 const hangmanButton = document.getElementById("hangman-button");
 const brickBreakerButton = document.getElementById("brick-breaker-button");
 const tetrisButton = document.getElementById("tetris-button");
+const pongButton = document.getElementById("pong-button");
 
 connectFourButton.addEventListener("click", function () {
     connectFourFrame.src = "projects/connect-four/index.html";
@@ -40,11 +41,14 @@ brickBreakerButton.addEventListener("click", function () {
 });
 
 tetrisButton.addEventListener("click", function () {
-
     connectFourFrame.src = "./projects/tetris/";
-
     gameModal.style.display = "flex";
 
+});
+
+pongButton.addEventListener("click", function () {
+    connectFourFrame.src = "./projects/pong/";
+    gameModal.style.display = "flex";
 });
 
 closeGameModal.addEventListener("click", function () {
