@@ -25,42 +25,28 @@ body {
 
 .hero {
     min-height: 100vh;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    text-align: center;
-}
 
-.hero-content h1 {
-    font-size: 64px;
-    margin: 0;
-}
-
-.facebook-link {
-    display: inline-block;
-    margin-top: 20px;
-    color: #F8FAFC;
-    text-decoration: none;
-}
-
-.facebook-link:hover {
-    color: #7C3AED;
-}
-
-.hero {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     text-align: center;
 
     background-image:
-        linear-gradient(rgba(11, 16, 38, 0.55), rgba(11, 16, 38, 0.75)),
+        linear-gradient(
+            rgba(11, 16, 38, 0.55),
+            rgba(11, 16, 38, 0.75)
+        ),
         url("images/hero.jpg");
 
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+}
+
+.hero-content h1 {
+    font-size: 64px;
+    margin: 0;
 }
 
 .facebook-link {
