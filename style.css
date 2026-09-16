@@ -1,27 +1,56 @@
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     margin: 0;
     background-color: #0B1026;
     color: #F8FAFC;
     font-family: Arial, sans-serif;
+    overflow-x: hidden;
 }
+
+
+/* =========================================================
+   NAVBAR
+========================================================= */
 
 .navbar {
     display: flex;
     justify-content: center;
-    gap: 40px;
-    padding: 25px;
+    align-items: center;
+
+    gap: clamp(18px, 3vw, 40px);
+
+    padding:
+        clamp(14px, 2.5vw, 25px)
+        clamp(12px, 4vw, 25px);
+
     background-color: #0B1026;
 }
 
 .navbar a {
     color: #F8FAFC;
     text-decoration: none;
-    font-size: 16px;
+
+    font-size:
+        clamp(12px, 1.4vw, 16px);
+
+    white-space: nowrap;
 }
 
 .navbar a:hover {
     color: #7C3AED;
 }
+
+
+/* =========================================================
+   HERO
+========================================================= */
 
 .hero {
     min-height: 100vh;
@@ -31,6 +60,9 @@ body {
     justify-content: center;
 
     text-align: center;
+
+    padding:
+        clamp(20px, 5vw, 60px);
 
     background-image:
         linear-gradient(
@@ -44,8 +76,16 @@ body {
     background-repeat: no-repeat;
 }
 
+.hero-content {
+    width: 100%;
+}
+
 .hero-content h1 {
-    font-size: 64px;
+    font-size:
+        clamp(32px, 6vw, 64px);
+
+    line-height: 1.1;
+
     margin: 0;
 }
 
@@ -54,10 +94,15 @@ body {
     align-items: center;
     justify-content: center;
 
-    width: 42px;
-    height: 42px;
+    width:
+        clamp(34px, 4vw, 42px);
 
-    margin: 20px auto 0;
+    height:
+        clamp(34px, 4vw, 42px);
+
+    margin:
+        clamp(14px, 2vw, 20px)
+        auto 0;
 
     border: 1px solid #F8FAFC;
     border-radius: 50%;
@@ -65,7 +110,9 @@ body {
     color: #F8FAFC;
     text-decoration: none;
 
-    font-size: 24px;
+    font-size:
+        clamp(19px, 2.4vw, 24px);
+
     font-weight: bold;
 
     transition: 0.3s ease;
@@ -77,64 +124,111 @@ body {
     transform: translateY(-3px);
 }
 
+
+/* =========================================================
+   ABOUT
+========================================================= */
+
 .about-section {
     min-height: 70vh;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 80px 10%;
+
+    padding:
+        clamp(50px, 8vw, 80px)
+        clamp(5%, 10vw, 10%);
 }
 
 .section-content {
+    width: 100%;
     max-width: 800px;
 }
 
 .section-content h2 {
-    margin-bottom: 25px;
-    font-size: 42px;
+    margin-bottom:
+        clamp(16px, 2vw, 25px);
+
+    font-size:
+        clamp(28px, 4vw, 42px);
+
     color: #7C3AED;
 }
 
 .section-content p {
     color: #94A3B8;
-    font-size: 18px;
+
+    font-size:
+        clamp(13px, 1.6vw, 18px);
+
     line-height: 1.8;
-    margin-bottom: 20px;
+
+    margin-bottom:
+        clamp(15px, 2vw, 20px);
 }
 
-.education-section {
-    padding: 100px 10%;
-}
+
+/* =========================================================
+   SECTION TITLES
+========================================================= */
 
 .section-title {
     text-align: center;
-    margin-bottom: 50px;
+
+    margin-bottom:
+        clamp(25px, 4vw, 50px);
 }
 
 .section-title h2 {
-    font-size: 42px;
+    font-size:
+        clamp(28px, 4vw, 42px);
+
     color: #7C3AED;
-    margin-bottom: 10px;
+
+    margin-bottom:
+        clamp(7px, 1vw, 10px);
 }
 
 .section-title p {
     color: #94A3B8;
-    font-size: 17px;
+
+    font-size:
+        clamp(13px, 1.5vw, 17px);
+}
+
+
+/* =========================================================
+   EDUCATION
+========================================================= */
+
+.education-section {
+    padding:
+        clamp(60px, 8vw, 100px)
+        clamp(5%, 10vw, 10%);
 }
 
 .education-container {
+    width: 100%;
     max-width: 1000px;
+
     margin: 0 auto;
+
     display: flex;
     flex-direction: column;
-    gap: 25px;
+
+    gap:
+        clamp(14px, 2.5vw, 25px);
 }
 
 .education-card {
     display: flex;
-    min-height: 220px;
+
+    min-height:
+        clamp(130px, 22vw, 220px);
 
     background-color: #111936;
+
     border: 1px solid #252D50;
     border-radius: 15px;
 
@@ -153,82 +247,102 @@ body {
 
 .school-image {
     width: 35%;
-    min-height: 220px;
+
+    min-height:
+        clamp(130px, 22vw, 220px);
+
+    flex-shrink: 0;
 }
 
 .school-image img {
     width: 100%;
     height: 100%;
+
+    display: block;
+
     object-fit: cover;
 }
 
 .school-info {
     flex: 1;
-    padding: 30px;
+
+    padding:
+        clamp(14px, 3vw, 30px);
 }
 
 .school-info span {
     color: #7C3AED;
-    font-size: 14px;
+
+    font-size:
+        clamp(9px, 1.3vw, 14px);
+
     font-weight: bold;
+
     text-transform: uppercase;
+
     letter-spacing: 1px;
 }
 
 .school-info h3 {
-    margin: 10px 0;
-    font-size: 28px;
+    margin:
+        clamp(5px, 1vw, 10px)
+        0;
+
+    font-size:
+        clamp(15px, 2.5vw, 28px);
+
+    line-height: 1.15;
 }
 
 .school-info p {
     color: #94A3B8;
-    line-height: 1.6;
+
+    line-height: 1.45;
+
+    font-size:
+        clamp(9px, 1.35vw, 16px);
+
+    margin:
+        clamp(4px, 0.7vw, 10px)
+        0;
 }
 
-@media (max-width: 700px) {
-    .education-section {
-        padding: 70px 5%;
-    }
 
-    .section-title h2 {
-        font-size: 34px;
-    }
-
-    .education-card {
-        flex-direction: column;
-    }
-
-    .school-image {
-        width: 100%;
-        height: 200px;
-    }
-
-    .school-info {
-        padding: 25px;
-    }
-
-    .school-info h3 {
-        font-size: 24px;
-    }
-}
+/* =========================================================
+   PROJECTS / ARCADE
+========================================================= */
 
 .projects-section {
-    padding: 100px 10%;
+    padding:
+        clamp(60px, 8vw, 100px)
+        clamp(3%, 10vw, 10%);
 }
 
 .projects-container {
+    width: 100%;
     max-width: 1100px;
+
     margin: 0 auto;
 
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap:
+        clamp(5px, 2.2vw, 25px);
 }
 
 .project-card {
+    min-width: 0;
+
     background-color: #111936;
+
     border: 1px solid #252D50;
-    border-radius: 15px;
+
+    border-radius:
+        clamp(7px, 1.2vw, 15px);
+
     overflow: hidden;
 
     transition: 0.3s ease;
@@ -240,7 +354,8 @@ body {
 }
 
 .project-preview {
-    height: 220px;
+    height:
+        clamp(105px, 20vw, 220px);
 
     display: flex;
     align-items: center;
@@ -248,7 +363,14 @@ body {
 
     background-color: #0B1026;
     color: #94A3B8;
+
+    overflow: hidden;
 }
+
+
+/* =========================================================
+   CONNECT FOUR
+========================================================= */
 
 .mini-connect-four {
     width: 190px;
@@ -257,11 +379,17 @@ body {
     padding: 8px;
 
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    grid-template-rows: repeat(6, 1fr);
+
+    grid-template-columns:
+        repeat(7, 1fr);
+
+    grid-template-rows:
+        repeat(6, 1fr);
+
     gap: 4px;
 
     background: #4F46E5;
+
     border: 2px solid #7C3AED;
     border-radius: 12px;
 }
@@ -286,6 +414,11 @@ body {
     border-color: #7DD3FC;
 }
 
+
+/* =========================================================
+   SNAKE
+========================================================= */
+
 .mini-snake {
     position: relative;
 
@@ -293,6 +426,7 @@ body {
     height: 165px;
 
     background: #111936;
+
     border: 2px solid #252D50;
     border-radius: 12px;
 }
@@ -311,39 +445,50 @@ body {
 .snake-head {
     top: 55px;
     left: 125px;
+
     background: #38BDF8;
 }
 
 .snake-body:nth-child(2) {
     top: 55px;
     left: 100px;
+
     background: #4F46E5;
 }
 
 .snake-body:nth-child(3) {
     top: 55px;
     left: 75px;
+
     background: #4F46E5;
 }
 
 .snake-body:nth-child(4) {
     top: 80px;
     left: 75px;
+
     background: #4F46E5;
 }
 
 .snake-body:nth-child(5) {
     top: 105px;
     left: 75px;
+
     background: #4F46E5;
 }
 
 .snake-food {
     top: 25px;
     left: 40px;
+
     background: #7C3AED;
     border-radius: 50%;
 }
+
+
+/* =========================================================
+   TIC TAC TOE
+========================================================= */
 
 .tic-tac-toe-preview {
     background: #0B1026;
@@ -356,11 +501,17 @@ body {
     padding: 8px;
 
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    grid-template-rows:
+        repeat(3, 1fr);
+
     gap: 5px;
 
     background: #4F46E5;
+
     border: 2px solid #7C3AED;
     border-radius: 12px;
 }
@@ -371,9 +522,11 @@ body {
     justify-content: center;
 
     background: #111936;
+
     border-radius: 7px;
 
     color: #F8FAFC;
+
     font-size: 28px;
     font-weight: bold;
 }
@@ -386,16 +539,24 @@ body {
     color: #38BDF8;
 }
 
+
+/* =========================================================
+   ROCK PAPER SCISSORS
+========================================================= */
+
 .mini-rock-paper-scissors {
     display: flex;
+
     align-items: center;
     justify-content: center;
+
     gap: 15px;
 
     width: 190px;
     height: 120px;
 
     background: #111936;
+
     border: 2px solid #4F46E5;
     border-radius: 12px;
 }
@@ -409,10 +570,12 @@ body {
     height: 42px;
 
     background: #0B1026;
+
     border: 1px solid #252D50;
     border-radius: 10px;
 
     color: #7C3AED;
+
     font-size: 24px;
     font-weight: bold;
 }
@@ -425,6 +588,11 @@ body {
     color: #F8FAFC;
 }
 
+
+/* =========================================================
+   HANGMAN
+========================================================= */
+
 .mini-hangman {
     position: relative;
 
@@ -432,14 +600,17 @@ body {
     height: 165px;
 
     background: #111936;
+
     border: 2px solid #4F46E5;
     border-radius: 12px;
 }
+
 
 /* Gallows */
 
 .mini-gallows-base {
     position: absolute;
+
     left: 35px;
     bottom: 20px;
 
@@ -452,6 +623,7 @@ body {
 
 .mini-gallows-pole {
     position: absolute;
+
     left: 55px;
     bottom: 25px;
 
@@ -463,6 +635,7 @@ body {
 
 .mini-gallows-top {
     position: absolute;
+
     left: 55px;
     top: 30px;
 
@@ -474,6 +647,7 @@ body {
 
 .mini-gallows-rope {
     position: absolute;
+
     left: 120px;
     top: 35px;
 
@@ -483,15 +657,17 @@ body {
     background: #94A3B8;
 }
 
+
 /* Mini stick figure */
 
 .mini-hangman-head {
     position: absolute;
-    left: 108px;
+
+    left: 109px;
     top: 50px;
 
-    width: 22px;
-    height: 22px;
+    width: 26px;
+    height: 26px;
 
     border: 3px solid #F8FAFC;
     border-radius: 50%;
@@ -499,6 +675,7 @@ body {
 
 .mini-hangman-body {
     position: absolute;
+
     left: 120px;
     top: 75px;
 
@@ -510,6 +687,7 @@ body {
 
 .mini-hangman-left-arm {
     position: absolute;
+
     left: 91px;
     top: 80px;
 
@@ -517,12 +695,17 @@ body {
     height: 3px;
 
     background: #F8FAFC;
-    transform: rotate(-30deg);
-    transform-origin: right center;
+
+    transform:
+        rotate(-30deg);
+
+    transform-origin:
+        right center;
 }
 
 .mini-hangman-right-arm {
     position: absolute;
+
     left: 122px;
     top: 80px;
 
@@ -530,12 +713,17 @@ body {
     height: 3px;
 
     background: #F8FAFC;
-    transform: rotate(30deg);
-    transform-origin: left center;
+
+    transform:
+        rotate(30deg);
+
+    transform-origin:
+        left center;
 }
 
 .mini-hangman-left-leg {
     position: absolute;
+
     left: 92px;
     top: 106px;
 
@@ -543,12 +731,17 @@ body {
     height: 3px;
 
     background: #F8FAFC;
-    transform: rotate(-50deg);
-    transform-origin: right center;
+
+    transform:
+        rotate(-50deg);
+
+    transform-origin:
+        right center;
 }
 
 .mini-hangman-right-leg {
     position: absolute;
+
     left: 121px;
     top: 106px;
 
@@ -556,9 +749,18 @@ body {
     height: 3px;
 
     background: #F8FAFC;
-    transform: rotate(50deg);
-    transform-origin: left center;
+
+    transform:
+        rotate(50deg);
+
+    transform-origin:
+        left center;
 }
+
+
+/* =========================================================
+   BRICK BREAKER
+========================================================= */
 
 .mini-brick-breaker {
     position: relative;
@@ -567,6 +769,7 @@ body {
     height: 165px;
 
     background: #111936;
+
     border: 2px solid #4F46E5;
     border-radius: 12px;
 
@@ -582,7 +785,10 @@ body {
     width: 160px;
 
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
     gap: 5px;
 }
 
@@ -590,6 +796,7 @@ body {
     height: 12px;
 
     background: #7C3AED;
+
     border-radius: 3px;
 }
 
@@ -620,43 +827,79 @@ body {
     height: 8px;
 
     background: #38BDF8;
+
     border-radius: 5px;
 }
 
+
+/* =========================================================
+   PROJECT INFO
+========================================================= */
+
 .project-info {
-    padding: 25px;
+    padding:
+        clamp(8px, 2.5vw, 25px);
 }
 
 .project-info > span {
     color: #7C3AED;
-    font-size: 13px;
+
+    font-size:
+        clamp(7px, 1.2vw, 13px);
+
     font-weight: bold;
+
     text-transform: uppercase;
+
     letter-spacing: 1px;
 }
 
 .project-info h3 {
-    margin: 10px 0;
-    font-size: 25px;
+    margin:
+        clamp(5px, 1vw, 10px)
+        0;
+
+    font-size:
+        clamp(11px, 2.3vw, 25px);
+
+    line-height: 1.15;
 }
 
 .project-info p {
     color: #94A3B8;
-    line-height: 1.6;
+
+    line-height: 1.45;
+
+    font-size:
+        clamp(8px, 1.35vw, 16px);
+
+    margin:
+        clamp(4px, 0.8vw, 10px)
+        0;
 }
 
 .project-info button {
-    margin-top: 10px;
-    padding: 10px 18px;
+    margin-top:
+        clamp(5px, 1vw, 10px);
+
+    padding:
+        clamp(5px, 1vw, 10px)
+        clamp(5px, 1.5vw, 18px);
+
+    width: 100%;
 
     background-color: #4F46E5;
     color: #F8FAFC;
 
     border: none;
-    border-radius: 8px;
+
+    border-radius:
+        clamp(5px, 0.8vw, 8px);
 
     cursor: pointer;
-    font-size: 14px;
+
+    font-size:
+        clamp(7px, 1.2vw, 14px);
 
     transition: 0.3s ease;
 }
@@ -665,12 +908,18 @@ body {
     background-color: #7C3AED;
 }
 
+
+/* =========================================================
+   TETRIS
+========================================================= */
+
 .tetris-preview {
     background: #0B1026;
 }
 
 .mini-tetris {
     position: relative;
+
     width: 190px;
     height: 165px;
 
@@ -691,10 +940,9 @@ body {
     border-radius: 3px;
 
     box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+        inset 0 0 0 1px
+        rgba(255, 255, 255, 0.18);
 }
-
-/* Colors */
 
 .tetris-block.cyan {
     background: #38BDF8;
@@ -716,63 +964,110 @@ body {
     background: #EF4444;
 }
 
-/* =========================================
-   CYAN - I PIECE
-   Horizontal
-========================================= */
+.b1 {
+    left: 10px;
+    top: 30px;
+}
 
-.b1 { left: 10px; top: 30px; }
-.b2 { left: 31px; top: 30px; }
-.b3 { left: 52px; top: 30px; }
-.b4 { left: 73px; top: 30px; }
+.b2 {
+    left: 31px;
+    top: 30px;
+}
+
+.b3 {
+    left: 52px;
+    top: 30px;
+}
+
+.b4 {
+    left: 73px;
+    top: 30px;
+}
+
+.b5 {
+    left: 125px;
+    top: 10px;
+}
+
+.b6 {
+    left: 104px;
+    top: 31px;
+}
+
+.b7 {
+    left: 125px;
+    top: 31px;
+}
+
+.b8 {
+    left: 146px;
+    top: 31px;
+}
+
+.b9 {
+    left: 20px;
+    top: 90px;
+}
+
+.b10 {
+    left: 41px;
+    top: 90px;
+}
+
+.b11 {
+    left: 20px;
+    top: 111px;
+}
+
+.b12 {
+    left: 41px;
+    top: 111px;
+}
+
+.b13 {
+    left: 100px;
+    top: 65px;
+}
+
+.b14 {
+    left: 121px;
+    top: 85px;
+}
+
+.b15 {
+    left: 79px;
+    top: 65px;
+}
+
+.b16 {
+    left: 100px;
+    top: 86px;
+}
+
+.b17 {
+    left: 126px;
+    top: 120px;
+}
+
+.b18 {
+    left: 147px;
+    top: 120px;
+}
+
+.b19 {
+    left: 105px;
+    top: 141px;
+}
+
+.b20 {
+    left: 126px;
+    top: 141px;
+}
 
 
-/* =========================================
-   PURPLE - T PIECE
-========================================= */
-
-.b5 { left: 125px; top: 10px; }
-.b6 { left: 104px; top: 31px; }
-.b7 { left: 125px; top: 31px; }
-.b8 { left: 146px; top: 31px; }
-
-
-/* =========================================
-   YELLOW - O PIECE
-========================================= */
-
-.b9  { left: 20px; top: 90px; }
-.b10 { left: 41px; top: 90px; }
-.b11 { left: 20px; top: 111px; }
-.b12 { left: 41px; top: 111px; }
-
-
-/* =========================================
-   GREEN - S PIECE
-   . . XX
-   XX . .
-========================================= */
-
-.b13 { left: 100px; top: 65px; }
-.b14 { left: 121px; top: 85px; }
-.b15 { left: 79px; top: 65px; }
-.b16 { left: 100px; top: 86px; }
-
-
-/* =========================================
-   RED - Z PIECE
-   XX . .
-   . . XX
-========================================= */
-
-.b17 { left: 126px; top: 120px; }
-.b18 { left: 147px; top: 120px; }
-.b19 { left: 105px; top: 141px; }
-.b20 { left: 126px; top: 141px; }
-
-/* ==============================
-   PONG PREVIEW
-============================== */
+/* =========================================================
+   PONG
+========================================================= */
 
 .pong-preview {
     background: #0B1026;
@@ -803,9 +1098,11 @@ body {
 
     width: 2px;
 
-    background: rgba(248, 250, 252, 0.2);
+    background:
+        rgba(248, 250, 252, 0.2);
 
-    transform: translateX(-50%);
+    transform:
+        translateX(-50%);
 
     border-radius: 2px;
 }
@@ -845,9 +1142,10 @@ body {
     border-radius: 50%;
 }
 
-/* ==============================
-   MINESWEEPER PREVIEW
-============================== */
+
+/* =========================================================
+   MINESWEEPER
+========================================================= */
 
 .minesweeper-preview {
     background: #0B1026;
@@ -859,8 +1157,11 @@ body {
 
     display: grid;
 
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(5, 1fr);
+    grid-template-columns:
+        repeat(5, 1fr);
+
+    grid-template-rows:
+        repeat(5, 1fr);
 
     gap: 3px;
 
@@ -901,10 +1202,14 @@ body {
     color: #16A34A;
 }
 
-/* Game Modal */
+
+/* =========================================================
+   GAME MODAL
+========================================================= */
 
 .game-modal {
     display: none;
+
     position: fixed;
     z-index: 1000;
 
@@ -914,27 +1219,43 @@ body {
     width: 100%;
     height: 100%;
 
-    background: rgba(11, 16, 38, 0.85);
+    background:
+        rgba(11, 16, 38, 0.85);
 
     align-items: center;
     justify-content: center;
 
-    padding: 20px;
+    padding:
+        clamp(6px, 2vw, 20px);
 }
 
 .game-modal-content {
     position: relative;
 
-    width: min(760px, 95vw);
-    height: min(780px, 95vh);
+    width:
+        min(
+            760px,
+            calc(100vw - 16px)
+        );
+
+    height:
+        min(
+            780px,
+            calc(100vh - 16px)
+        );
 
     background: #111936;
+
     border: 1px solid #7C3AED;
-    border-radius: 18px;
+
+    border-radius:
+        clamp(10px, 2vw, 18px);
 
     overflow: hidden;
 
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    box-shadow:
+        0 20px 60px
+        rgba(0, 0, 0, 0.5);
 }
 
 .game-modal-content iframe {
@@ -947,13 +1268,19 @@ body {
 .close-game-modal {
     position: absolute;
 
-    top: 10px;
-    right: 10px;
+    top:
+        clamp(7px, 1vw, 10px);
+
+    right:
+        clamp(7px, 1vw, 10px);
 
     z-index: 10;
 
-    width: 36px;
-    height: 36px;
+    width:
+        clamp(32px, 4vw, 36px);
+
+    height:
+        clamp(32px, 4vw, 36px);
 
     border: 1px solid #7C3AED;
     border-radius: 50%;
@@ -961,8 +1288,10 @@ body {
     background: #0B1026;
     color: #F8FAFC;
 
-    font-size: 24px;
-    line-height: 30px;
+    font-size:
+        clamp(20px, 2.5vw, 24px);
+
+    line-height: 1;
 
     cursor: pointer;
 
@@ -974,211 +1303,188 @@ body {
     transform: scale(1.05);
 }
 
+
 /* =========================================================
-   MOBILE RESPONSIVE ADDITIONS
-   Does not change existing desktop styling
+   MOBILE LAYOUT
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .navbar {
+        gap: 12px;
+    }
+
+    /*
+        Keep education cards horizontal.
+    */
+
+    .education-card {
+        flex-direction: row;
+    }
+
+    .school-image {
+        width: 35%;
+
+        min-height:
+            clamp(120px, 24vw, 170px);
+    }
+
+    .school-info {
+        padding:
+            clamp(10px, 2.5vw, 18px);
+    }
+
+    /*
+        Keep arcade 3 x 3.
+    */
+
+    .projects-container {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+
+        gap:
+            clamp(4px, 1.5vw, 10px);
+    }
+
+    .project-preview {
+        height:
+            clamp(95px, 25vw, 150px);
+    }
+
+    .project-info {
+        padding:
+            clamp(7px, 1.8vw, 12px);
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media (max-width: 400px) {
+
+    .navbar {
+        gap: 8px;
+    }
+
+    .projects-section {
+        padding-left: 2%;
+        padding-right: 2%;
+    }
+
+    .projects-container {
+        gap: 3px;
+    }
+
+    .project-card {
+        border-radius: 6px;
+    }
+
+    .project-preview {
+        height: 90px;
+    }
+
+    .project-info {
+        padding: 5px;
+    }
+
+    .project-info > span {
+        font-size: 6px;
+    }
+
+    .project-info h3 {
+        font-size: 9px;
+    }
+
+    .project-info p {
+        font-size: 7px;
+        line-height: 1.25;
+    }
+
+    .project-info button {
+        min-height: 24px;
+
+        padding:
+            4px 2px;
+
+        font-size: 7px;
+
+        border-radius: 4px;
+    }
+
+    .school-info h3 {
+        font-size: 13px;
+    }
+
+    .school-info p {
+        font-size: 8px;
+    }
+}
+
+
+/* =========================================================
+   PREVIEW SCALING
+   The entire mini-game preview scales as one unit.
+   Internal positioning stays proportional.
 ========================================================= */
 
 @media (max-width: 1000px) {
 
-    .projects-container {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 20px;
-    }
-
-    .projects-section {
-        padding-left: 6%;
-        padding-right: 6%;
-    }
-
-    .education-section,
-    .about-section {
-        padding-left: 6%;
-        padding-right: 6%;
+    .mini-connect-four,
+    .mini-snake,
+    .mini-tic-tac-toe,
+    .mini-rock-paper-scissors,
+    .mini-hangman,
+    .mini-brick-breaker,
+    .mini-tetris,
+    .mini-pong,
+    .mini-minesweeper {
+        zoom: 0.85;
     }
 }
-
 
 @media (max-width: 700px) {
 
-    html,
-    body {
-        max-width: 100%;
-        overflow-x: hidden;
-    }
-
-    /* Navigation */
-
-    .navbar {
-        flex-wrap: wrap;
-        gap: 18px;
-        padding: 18px 12px;
-    }
-
-    .navbar a {
-        font-size: 15px;
-    }
-
-
-    /* Hero */
-
-    .hero {
-        min-height: 85vh;
-        padding: 30px 18px;
-    }
-
-    .hero-content h1 {
-        font-size: 42px;
-        line-height: 1.1;
-    }
-
-
-    /* About */
-
-    .about-section {
-        min-height: auto;
-        padding: 65px 6%;
-    }
-
-    .section-content h2 {
-        font-size: 34px;
-    }
-
-    .section-content p {
-        font-size: 16px;
-        line-height: 1.7;
-    }
-
-
-    /* Section titles */
-
-    .section-title {
-        margin-bottom: 35px;
-    }
-
-    .section-title h2 {
-        font-size: 34px;
-    }
-
-    .section-title p {
-        font-size: 15px;
-        line-height: 1.6;
-    }
-
-
-    /* Education */
-
-    .education-section {
-        padding: 70px 5%;
-    }
-
-    .education-card {
-        flex-direction: column;
-    }
-
-    .school-image {
-        width: 100%;
-        height: 200px;
-        min-height: 200px;
-    }
-
-    .school-info {
-        padding: 25px 20px;
-    }
-
-    .school-info h3 {
-        font-size: 24px;
-    }
-
-
-    /* Arcade */
-
-    .projects-section {
-        padding: 70px 5%;
-    }
-
-    .projects-container {
-        grid-template-columns: 1fr;
-        width: 100%;
-        gap: 20px;
-    }
-
-    .project-card {
-        width: 100%;
-    }
-
-    .project-preview {
-        height: 200px;
-        padding: 10px;
-    }
-
-    .project-info {
-        padding: 22px 20px;
-    }
-
-    .project-info h3 {
-        font-size: 23px;
-    }
-
-    .project-info p {
-        font-size: 15px;
-        line-height: 1.6;
-    }
-
-    .project-info button {
-        width: 100%;
-        min-height: 44px;
-        padding: 11px 18px;
-        font-size: 15px;
-    }
-
-
-    /* Game modal */
-
-    .game-modal {
-        padding: 8px;
-    }
-
-    .game-modal-content {
-        width: calc(100vw - 16px);
-        height: calc(100vh - 16px);
-        border-radius: 14px;
-    }
-
-    .close-game-modal {
-        width: 40px;
-        height: 40px;
-        top: 8px;
-        right: 8px;
+    .mini-connect-four,
+    .mini-snake,
+    .mini-tic-tac-toe,
+    .mini-rock-paper-scissors,
+    .mini-hangman,
+    .mini-brick-breaker,
+    .mini-tetris,
+    .mini-pong,
+    .mini-minesweeper {
+        zoom: 0.62;
     }
 }
 
+@media (max-width: 500px) {
 
-@media (max-width: 420px) {
-
-    .navbar {
-        gap: 14px;
+    .mini-connect-four,
+    .mini-snake,
+    .mini-tic-tac-toe,
+    .mini-rock-paper-scissors,
+    .mini-hangman,
+    .mini-brick-breaker,
+    .mini-tetris,
+    .mini-pong,
+    .mini-minesweeper {
+        zoom: 0.52;
     }
+}
 
-    .navbar a {
-        font-size: 14px;
-    }
+@media (max-width: 400px) {
 
-    .hero-content h1 {
-        font-size: 36px;
-    }
-
-    .section-title h2,
-    .section-content h2 {
-        font-size: 30px;
-    }
-
-    .projects-section {
-        padding-left: 4%;
-        padding-right: 4%;
-    }
-
-    .project-preview {
-        height: 190px;
+    .mini-connect-four,
+    .mini-snake,
+    .mini-tic-tac-toe,
+    .mini-rock-paper-scissors,
+    .mini-hangman,
+    .mini-brick-breaker,
+    .mini-tetris,
+    .mini-pong,
+    .mini-minesweeper {
+        zoom: 0.44;
     }
 }
