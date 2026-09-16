@@ -1120,6 +1120,10 @@ document.addEventListener(
         if (event.code === "Space") {
             hardDrop();
         }
+        if (event.key === "Shift") {
+        event.preventDefault();
+        holdCurrentPiece();
+        }
     }
 );
 
