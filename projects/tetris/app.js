@@ -28,103 +28,71 @@ const softDropButton = document.getElementById("soft-drop");
 const hardDropButton = document.getElementById("hard-drop");
 const holdButton = document.getElementById("hold-piece");
 
-
-/*
-    --------------------------------------------------
-    BOARD
-    --------------------------------------------------
-*/
+/* =========================================================
+   CONSTANTS
+========================================================= */
 
 const COLS = 10;
 const ROWS = 20;
 const BLOCK_SIZE = 30;
 
-let board = createBoard();
-
-
-function createBoard() {
-    return Array.from(
-        { length: ROWS },
-        () => Array(COLS).fill(0)
-    );
-}
-
-
-/*
-    --------------------------------------------------
-    TETROMINOES
-    --------------------------------------------------
-*/
-
-const PIECES = {
-    I: {
-        color: "#38BDF8",
-        shape: [
-            [1, 1, 1, 1]
-        ]
-    },
-
-    O: {
-        color: "#FACC15",
-        shape: [
-            [1, 1],
-            [1, 1]
-        ]
-    },
-
-    T: {
-        color: "#A855F7",
-        shape: [
-            [0, 1, 0],
-            [1, 1, 1]
-        ]
-    },
-
-    S: {
-        color: "#22C55E",
-        shape: [
-            [0, 1, 1],
-            [1, 1, 0]
-        ]
-    },
-
-    Z: {
-        color: "#EF4444",
-        shape: [
-            [1, 1, 0],
-            [0, 1, 1]
-        ]
-    },
-
-    J: {
-        color: "#3B82F6",
-        shape: [
-            [1, 0, 0],
-            [1, 1, 1]
-        ]
-    },
-
-    L: {
-        color: "#F97316",
-        shape: [
-            [0, 0, 1],
-            [1, 1, 1]
-        ]
-    }
+const COLORS = {
+    I: "#38BDF8",
+    O: "#FACC15",
+    T: "#A855F7",
+    S: "#22C55E",
+    Z: "#EF4444",
+    J: "#3B82F6",
+    L: "#F97316"
 };
 
-const PIECE_TYPES = Object.keys(PIECES);
+const SHAPES = {
+    I: [
+        [1, 1, 1, 1]
+    ],
 
+    O: [
+        [1, 1],
+        [1, 1]
+    ],
 
-/*
-    --------------------------------------------------
-    GAME STATE
-    --------------------------------------------------
-*/
+    T: [
+        [0, 1, 0],
+        [1, 1, 1]
+    ],
+
+    S: [
+        [0, 1, 1],
+        [1, 1, 0]
+    ],
+
+    Z: [
+        [1, 1, 0],
+        [0, 1, 1]
+    ],
+
+    J: [
+        [1, 0, 0],
+        [1, 1, 1]
+    ],
+
+    L: [
+        [0, 0, 1],
+        [1, 1, 1]
+    ]
+};
+
+const PIECE_TYPES = Object.keys(SHAPES);
+
+/* =========================================================
+   GAME STATE
+========================================================= */
+
+let board = createBoard();
 
 let currentPiece = null;
 let nextPiece = null;
-let holdPiece = null;
+let heldPiece = null;
 
 let bag = [];
 
@@ -135,127 +103,86 @@ let lines = 0;
 let level = 1;
 
 let gameRunning = false;
-let gameOver = false;
+let gameEnded = false;
 
 let dropTimer = 0;
-let lastTime = 0;
+let lastFrameTime = 0;
 let animationFrame = null;
 
+let musicEnabled = true;
 
-/*
-    --------------------------------------------------
-    7-BAG GENERATOR
-    --------------------------------------------------
-*/
+/* =========================================================
+   BOARD
+========================================================= */
 
-function createBag() {
-    const newBag = [...PIECE_TYPES];
-
-    for (let i = newBag.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-
-        [newBag[i], newBag[j]] =
-            [newBag[j], newBag[i]];
-    }
-
-    return newBag;
+function createBoard() {
+    return Array.from(
+        { length: ROWS },
+        () => Array(COLS).fill(null)
+    );
 }
 
+/* =========================================================
+   BAG RANDOMIZER
+========================================================= */
 
-function getNextType() {
+function shuffle(array) {
+    const copy = [...array];
+
+    for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+
+    return copy;
+}
+
+function refillBag() {
+    bag = shuffle(PIECE_TYPES);
+}
+
+function getNextPieceType() {
     if (bag.length === 0) {
-        bag = createBag();
+        refillBag();
     }
 
     return bag.shift();
 }
 
+/* =========================================================
+   PIECES
+========================================================= */
 
-/*
-    --------------------------------------------------
-    PIECE HELPERS
-    --------------------------------------------------
-*/
-
-function cloneMatrix(matrix) {
+function copyMatrix(matrix) {
     return matrix.map(row => [...row]);
 }
 
-
 function createPiece(type) {
-    const definition = PIECES[type];
-
-    const shape = cloneMatrix(definition.shape);
-
-    const width = shape[0].length;
+    const shape = copyMatrix(SHAPES[type]);
 
     return {
         type,
         shape,
-        color: definition.color,
-
-        x: Math.floor(
-            (COLS - width) / 2
-        ),
-
-        y: 0,
-
-        rotation: 0
+        color: COLORS[type],
+        x: Math.floor((COLS - shape[0].length) / 2),
+        y: -1
     };
 }
 
+/* =========================================================
+   COLLISION
+========================================================= */
 
-function rotateMatrix(matrix, direction) {
-    const size = matrix.length;
-
-    const result =
-        Array.from(
-            { length: size },
-            () => Array(size).fill(0)
-        );
-
-    for (let row = 0; row < size; row++) {
-        for (let col = 0; col < size; col++) {
-
-            if (direction === 1) {
-                result[col][size - 1 - row] =
-                    matrix[row][col];
-            }
-            else {
-                result[size - 1 - col][row] =
-                    matrix[row][col];
-            }
-        }
-    }
-
-    return result;
-}
-
-
-/*
-    --------------------------------------------------
-    COLLISION
-    --------------------------------------------------
-*/
-
-function collides(piece, offsetX = 0, offsetY = 0, testShape = piece.shape) {
-
-    for (let row = 0; row < testShape.length; row++) {
-        for (let col = 0; col < testShape[row].length; col++) {
-
-            if (!testShape[row][col]) {
+function pieceCollides(piece, offsetX = 0, offsetY = 0, shape = piece.shape) {
+    for (let row = 0; row < shape.length; row++) {
+        for (let col = 0; col < shape[row].length; col++) {
+            if (!shape[row][col]) {
                 continue;
             }
 
-            const x =
-                piece.x +
-                col +
-                offsetX;
-
-            const y =
-                piece.y +
-                row +
-                offsetY;
+            const x = piece.x + col + offsetX;
+            const y = piece.y + row + offsetY;
 
             if (x < 0 || x >= COLS) {
                 return true;
@@ -274,79 +201,64 @@ function collides(piece, offsetX = 0, offsetY = 0, testShape = piece.shape) {
     return false;
 }
 
+/* =========================================================
+   ROTATION
+========================================================= */
 
-/*
-    --------------------------------------------------
-    MOVEMENT
-    --------------------------------------------------
-*/
+function rotateMatrixClockwise(matrix) {
+    const rows = matrix.length;
+    const cols = matrix[0].length;
 
-function movePiece(direction) {
-    if (!gameRunning) {
-        return;
+    const rotated = Array.from(
+        { length: cols },
+        () => Array(rows).fill(0)
+    );
+
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+            rotated[col][rows - 1 - row] = matrix[row][col];
+        }
     }
 
-    if (
-        !collides(
-            currentPiece,
-            direction,
-            0
-        )
-    ) {
-        currentPiece.x += direction;
-    }
+    return rotated;
 }
 
+function rotateMatrixCounterClockwise(matrix) {
+    const rows = matrix.length;
+    const cols = matrix[0].length;
 
-function softDrop() {
-    if (!gameRunning) {
-        return;
+    const rotated = Array.from(
+        { length: cols },
+        () => Array(rows).fill(0)
+    );
+
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+            rotated[cols - 1 - col][row] = matrix[row][col];
+        }
     }
 
-    if (
-        !collides(
-            currentPiece,
-            0,
-            1
-        )
-    ) {
-        currentPiece.y += 1;
-
-        score += 1;
-
-        updateDisplays();
-    }
-    else {
-        lockPiece();
-    }
+    return rotated;
 }
-
-
-/*
-    --------------------------------------------------
-    ROTATION
-    --------------------------------------------------
-*/
 
 function rotatePiece(direction) {
-    if (!gameRunning) {
+    if (!gameRunning || !currentPiece) {
         return;
     }
 
+    // O piece doesn't visually rotate.
     if (currentPiece.type === "O") {
         return;
     }
 
     const rotatedShape =
-        rotateMatrix(
-            makeSquareMatrix(currentPiece.shape),
-            direction
-        );
+        direction === 1
+            ? rotateMatrixClockwise(currentPiece.shape)
+            : rotateMatrixCounterClockwise(currentPiece.shape);
 
     /*
-        Simple wall/floor kicks.
-        These cover the common situations
-        around edges and the floor.
+        Basic wall/floor kicks.
+        Try the normal position first, then small offsets.
     */
     const kicks = [
         [0, 0],
@@ -359,9 +271,8 @@ function rotatePiece(direction) {
     ];
 
     for (const [offsetX, offsetY] of kicks) {
-
         if (
-            !collides(
+            !pieceCollides(
                 currentPiece,
                 offsetX,
                 offsetY,
@@ -369,137 +280,50 @@ function rotatePiece(direction) {
             )
         ) {
             currentPiece.shape = rotatedShape;
-
             currentPiece.x += offsetX;
             currentPiece.y += offsetY;
-
-            currentPiece.rotation =
-                (
-                    currentPiece.rotation +
-                    direction +
-                    4
-                ) % 4;
-
             return;
         }
     }
 }
 
+/* =========================================================
+   MOVEMENT
+========================================================= */
 
-function makeSquareMatrix(matrix) {
-    const size =
-        Math.max(
-            matrix.length,
-            matrix[0].length
-        );
-
-    const result =
-        Array.from(
-            { length: size },
-            () => Array(size).fill(0)
-        );
-
-    for (let row = 0; row < matrix.length; row++) {
-        for (let col = 0; col < matrix[row].length; col++) {
-            result[row][col] =
-                matrix[row][col];
-        }
-    }
-
-    return result;
-}
-
-
-/*
-    --------------------------------------------------
-    HOLD
-    --------------------------------------------------
-*/
-
-function holdCurrentPiece() {
-    if (!gameRunning || !canHold) {
+function movePiece(direction) {
+    if (!gameRunning || !currentPiece) {
         return;
     }
 
-    canHold = false;
-
-    const currentType =
-        currentPiece.type;
-
-    if (holdPiece === null) {
-
-        holdPiece = currentType;
-
-        spawnNextPiece();
-    }
-    else {
-
-        const swapType =
-            holdPiece;
-
-        holdPiece = currentType;
-
-        currentPiece =
-            createPiece(swapType);
-
-        if (collides(currentPiece)) {
-            endGame();
-        }
-    }
-
-    drawHoldPiece();
-}
-
-
-/*
-    --------------------------------------------------
-    SPAWNING
-    --------------------------------------------------
-*/
-
-function spawnNextPiece() {
-
-    if (nextPiece === null) {
-        nextPiece =
-            getNextType();
-    }
-
-    currentPiece =
-        createPiece(nextPiece);
-
-    nextPiece =
-        getNextType();
-
-    canHold = true;
-
-    drawNextPiece();
-
-    if (collides(currentPiece)) {
-        endGame();
+    if (!pieceCollides(currentPiece, direction, 0)) {
+        currentPiece.x += direction;
     }
 }
 
+function softDrop() {
+    if (!gameRunning || !currentPiece) {
+        return;
+    }
 
-/*
-    --------------------------------------------------
-    HARD DROP
-    --------------------------------------------------
-*/
+    if (!pieceCollides(currentPiece, 0, 1)) {
+        currentPiece.y += 1;
+
+        score += 1;
+        updateHUD();
+    } else {
+        lockPiece();
+    }
+}
 
 function hardDrop() {
-    if (!gameRunning) {
+    if (!gameRunning || !currentPiece) {
         return;
     }
 
     let distance = 0;
 
-    while (
-        !collides(
-            currentPiece,
-            0,
-            1
-        )
-    ) {
+    while (!pieceCollides(currentPiece, 0, 1)) {
         currentPiece.y += 1;
         distance++;
     }
@@ -509,269 +333,296 @@ function hardDrop() {
     lockPiece();
 }
 
+/* =========================================================
+   SPAWNING
+========================================================= */
 
-/*
-    --------------------------------------------------
-    LOCKING
-    --------------------------------------------------
-*/
+function spawnPiece() {
+    currentPiece = createPiece(nextPiece);
+
+    nextPiece = getNextPieceType();
+
+    /*
+        Game over if the new piece cannot spawn.
+    */
+    if (pieceCollides(currentPiece)) {
+        endGame();
+        return;
+    }
+
+    canHold = true;
+
+    drawNextPreview();
+}
+
+function prepareFirstPiece() {
+    if (!nextPiece) {
+        nextPiece = getNextPieceType();
+    }
+
+    spawnPiece();
+}
+
+/* =========================================================
+   HOLD
+========================================================= */
+
+function holdCurrentPiece() {
+    if (!gameRunning || !currentPiece || !canHold) {
+        return;
+    }
+
+    canHold = false;
+
+    const currentType = currentPiece.type;
+
+    if (heldPiece === null) {
+        heldPiece = currentType;
+
+        spawnPiece();
+    } else {
+        const swapType = heldPiece;
+
+        heldPiece = currentType;
+
+        currentPiece = createPiece(swapType);
+
+        if (pieceCollides(currentPiece)) {
+            endGame();
+            return;
+        }
+    }
+
+    drawHoldPreview();
+}
+
+/* =========================================================
+   LOCK PIECE
+========================================================= */
 
 function lockPiece() {
+    if (!currentPiece) {
+        return;
+    }
 
-    for (
-        let row = 0;
-        row < currentPiece.shape.length;
-        row++
-    ) {
-
-        for (
-            let col = 0;
-            col < currentPiece.shape[row].length;
-            col++
-        ) {
-
+    for (let row = 0; row < currentPiece.shape.length; row++) {
+        for (let col = 0; col < currentPiece.shape[row].length; col++) {
             if (!currentPiece.shape[row][col]) {
                 continue;
             }
 
-            const x =
-                currentPiece.x + col;
+            const x = currentPiece.x + col;
+            const y = currentPiece.y + row;
 
-            const y =
-                currentPiece.y + row;
-
-            if (
-                y >= 0 &&
-                y < ROWS &&
-                x >= 0 &&
-                x < COLS
-            ) {
-                board[y][x] =
-                    currentPiece.color;
+            if (y >= 0 && y < ROWS && x >= 0 && x < COLS) {
+                board[y][x] = currentPiece.color;
             }
         }
     }
 
-    clearLines();
+    clearCompletedLines();
 
-    spawnNextPiece();
+    spawnPiece();
 
     dropTimer = 0;
-
-    updateDisplays();
 }
 
+/* =========================================================
+   LINE CLEARING
+========================================================= */
 
-/*
-    --------------------------------------------------
-    LINE CLEARING
-    --------------------------------------------------
-*/
-
-function clearLines() {
-
+function clearCompletedLines() {
     let cleared = 0;
 
-    for (
-        let row = ROWS - 1;
-        row >= 0;
-        row--
-    ) {
+    for (let row = ROWS - 1; row >= 0; row--) {
+        const fullRow = board[row].every(cell => cell !== null);
 
-        if (
-            board[row].every(
-                cell => cell !== 0
-            )
-        ) {
-
-            board.splice(row, 1);
-
-            board.unshift(
-                Array(COLS).fill(0)
-            );
-
-            cleared++;
-
-            row++;
+        if (!fullRow) {
+            continue;
         }
+
+        board.splice(row, 1);
+        board.unshift(Array(COLS).fill(null));
+
+        cleared++;
+        row++;
     }
 
     if (cleared === 0) {
         return;
     }
 
-    lines += cleared;
-
-    const lineScores = {
+    const points = {
         1: 100,
         2: 300,
         3: 500,
         4: 800
     };
 
-    score +=
-        (lineScores[cleared] || 0) *
-        level;
+    score += (points[cleared] || 0) * level;
 
-    level =
-        Math.floor(lines / 10) + 1;
+    lines += cleared;
 
-    updateDisplays();
+    level = Math.floor(lines / 10) + 1;
+
+    updateHUD();
 }
 
+/* =========================================================
+   GRAVITY
+========================================================= */
 
-/*
-    --------------------------------------------------
-    GHOST PIECE
-    --------------------------------------------------
-*/
+function getDropInterval() {
+    /*
+        Level 1 = 900ms
+        Each level becomes faster.
+        Minimum = 70ms.
+    */
+    return Math.max(
+        70,
+        900 - (level - 1) * 80
+    );
+}
+
+function update(deltaTime) {
+    if (!gameRunning || !currentPiece) {
+        return;
+    }
+
+    dropTimer += deltaTime;
+
+    if (dropTimer < getDropInterval()) {
+        return;
+    }
+
+    dropTimer = 0;
+
+    if (!pieceCollides(currentPiece, 0, 1)) {
+        currentPiece.y += 1;
+    } else {
+        lockPiece();
+    }
+}
+
+/* =========================================================
+   GHOST PIECE
+========================================================= */
 
 function getGhostPiece() {
+    if (!currentPiece) {
+        return null;
+    }
 
     const ghost = {
-        ...currentPiece,
-        shape: cloneMatrix(
-            currentPiece.shape
-        )
+        type: currentPiece.type,
+        shape: copyMatrix(currentPiece.shape),
+        color: currentPiece.color,
+        x: currentPiece.x,
+        y: currentPiece.y
     };
 
-    while (
-        !collides(
-            ghost,
-            0,
-            1,
-            ghost.shape
-        )
-    ) {
-        ghost.y += 1;
+    while (!pieceCollides(ghost, 0, 1, ghost.shape)) {
+        ghost.y++;
     }
 
     return ghost;
 }
 
+/* =========================================================
+   DRAWING
+========================================================= */
 
-/*
-    --------------------------------------------------
-    GRAVITY
-    --------------------------------------------------
-*/
+function clearCanvas(context, width, height) {
+    context.clearRect(0, 0, width, height);
 
-function getDropInterval() {
+    context.fillStyle = "#0B1026";
+    context.fillRect(0, 0, width, height);
+}
 
-    /*
-        Starts comfortably slow and becomes
-        faster every level.
-    */
-    return Math.max(
-        70,
-        900 -
-        (level - 1) * 80
+function drawBlock(context, x, y, color, size, alpha = 1) {
+    if (y < 0) {
+        return;
+    }
+
+    context.globalAlpha = alpha;
+
+    context.fillStyle = color;
+
+    context.fillRect(
+        x * size + 1,
+        y * size + 1,
+        size - 2,
+        size - 2
+    );
+
+    context.globalAlpha = 1;
+
+    context.strokeStyle = "rgba(255,255,255,0.18)";
+    context.lineWidth = 1;
+
+    context.strokeRect(
+        x * size + 1.5,
+        y * size + 1.5,
+        size - 3,
+        size - 3
     );
 }
 
+function drawPiece(context, piece, size, alpha = 1) {
+    if (!piece) {
+        return;
+    }
 
-function update(delta) {
+    for (let row = 0; row < piece.shape.length; row++) {
+        for (let col = 0; col < piece.shape[row].length; col++) {
+            if (!piece.shape[row][col]) {
+                continue;
+            }
 
-    dropTimer += delta;
-
-    if (
-        dropTimer >=
-        getDropInterval()
-    ) {
-
-        dropTimer = 0;
-
-        if (
-            !collides(
-                currentPiece,
-                0,
-                1
-            )
-        ) {
-            currentPiece.y += 1;
-        }
-        else {
-            lockPiece();
+            drawBlock(
+                context,
+                piece.x + col,
+                piece.y + row,
+                piece.color,
+                size,
+                alpha
+            );
         }
     }
 }
 
-
-/*
-    --------------------------------------------------
-    DRAW BOARD
-    --------------------------------------------------
-*/
-
-function drawBoard() {
-
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-    ctx.fillStyle = "#0B1026";
-
-    ctx.fillRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-    /*
-        Grid
-    */
-    ctx.strokeStyle =
-        "rgba(148, 163, 184, 0.08)";
-
+function drawBoardGrid() {
+    ctx.strokeStyle = "rgba(148, 163, 184, 0.08)";
     ctx.lineWidth = 1;
 
     for (let x = 0; x <= COLS; x++) {
-
         ctx.beginPath();
-
-        ctx.moveTo(
-            x * BLOCK_SIZE,
-            0
-        );
-
-        ctx.lineTo(
-            x * BLOCK_SIZE,
-            ROWS * BLOCK_SIZE
-        );
-
+        ctx.moveTo(x * BLOCK_SIZE, 0);
+        ctx.lineTo(x * BLOCK_SIZE, ROWS * BLOCK_SIZE);
         ctx.stroke();
     }
 
     for (let y = 0; y <= ROWS; y++) {
-
         ctx.beginPath();
-
-        ctx.moveTo(
-            0,
-            y * BLOCK_SIZE
-        );
-
-        ctx.lineTo(
-            COLS * BLOCK_SIZE,
-            y * BLOCK_SIZE
-        );
-
+        ctx.moveTo(0, y * BLOCK_SIZE);
+        ctx.lineTo(COLS * BLOCK_SIZE, y * BLOCK_SIZE);
         ctx.stroke();
     }
+}
 
-    /*
-        Locked blocks
-    */
+function drawBoard() {
+    clearCanvas(
+        ctx,
+        canvas.width,
+        canvas.height
+    );
+
+    drawBoardGrid();
+
+    // Locked blocks
     for (let row = 0; row < ROWS; row++) {
-
         for (let col = 0; col < COLS; col++) {
-
             if (board[row][col]) {
-
                 drawBlock(
                     ctx,
                     col,
@@ -787,136 +638,34 @@ function drawBoard() {
         return;
     }
 
-    /*
-        Ghost
-    */
-    const ghost =
-        getGhostPiece();
+    // Ghost piece
+    const ghost = getGhostPiece();
 
-    drawPiece(
-        ctx,
-        ghost,
-        true
-    );
+    if (ghost) {
+        drawPiece(
+            ctx,
+            ghost,
+            BLOCK_SIZE,
+            0.18
+        );
+    }
 
-    /*
-        Current piece
-    */
+    // Active piece
     drawPiece(
         ctx,
         currentPiece,
-        false
+        BLOCK_SIZE,
+        1
     );
 }
 
+/* =========================================================
+   PREVIEWS
+========================================================= */
 
-function drawBlock(
-    context,
-    x,
-    y,
-    color,
-    size,
-    ghost = false
-) {
-
-    context.fillStyle =
-        ghost
-            ? "rgba(255,255,255,0.12)"
-            : color;
-
-    context.fillRect(
-        x * size + 1,
-        y * size + 1,
-        size - 2,
-        size - 2
-    );
-
-    if (!ghost) {
-
-        context.strokeStyle =
-            "rgba(255,255,255,0.22)";
-
-        context.lineWidth = 1;
-
-        context.strokeRect(
-            x * size + 1.5,
-            y * size + 1.5,
-            size - 3,
-            size - 3
-        );
-    }
-}
-
-
-function drawPiece(
-    context,
-    piece,
-    ghost
-) {
-
-    for (
-        let row = 0;
-        row < piece.shape.length;
-        row++
-    ) {
-
-        for (
-            let col = 0;
-            col < piece.shape[row].length;
-            col++
-        ) {
-
-            if (!piece.shape[row][col]) {
-                continue;
-            }
-
-            const x =
-                piece.x + col;
-
-            const y =
-                piece.y + row;
-
-            if (y < 0) {
-                continue;
-            }
-
-            drawBlock(
-                context,
-                x,
-                y,
-                piece.color,
-                BLOCK_SIZE,
-                ghost
-            );
-        }
-    }
-}
-
-
-/*
-    --------------------------------------------------
-    NEXT / HOLD PREVIEWS
-    --------------------------------------------------
-*/
-
-function drawPreview(
-    context,
-    type
-) {
-
-    context.clearRect(
-        0,
-        0,
-        context.canvas.width,
-        context.canvas.height
-    );
-
-    context.fillStyle =
-        "#0B1026";
-
-    context.fillRect(
-        0,
-        0,
+function drawPreviewCanvas(context, type) {
+    clearCanvas(
+        context,
         context.canvas.width,
         context.canvas.height
     );
@@ -925,113 +674,78 @@ function drawPreview(
         return;
     }
 
-    const definition =
-        PIECES[type];
+    const definition = SHAPES[type];
+    const color = COLORS[type];
 
-    const shape =
-        definition.shape;
-
-    const size = 24;
+    const previewBlockSize = 24;
 
     const width =
-        shape[0].length * size;
+        definition[0].length *
+        previewBlockSize;
 
     const height =
-        shape.length * size;
+        definition.length *
+        previewBlockSize;
 
     const offsetX =
-        (
-            context.canvas.width -
-            width
-        ) / 2;
+        (context.canvas.width - width) / 2;
 
     const offsetY =
-        (
-            context.canvas.height -
-            height
-        ) / 2;
+        (context.canvas.height - height) / 2;
 
-    for (
-        let row = 0;
-        row < shape.length;
-        row++
-    ) {
-
-        for (
-            let col = 0;
-            col < shape[row].length;
-            col++
-        ) {
-
-            if (!shape[row][col]) {
+    for (let row = 0; row < definition.length; row++) {
+        for (let col = 0; col < definition[row].length; col++) {
+            if (!definition[row][col]) {
                 continue;
             }
 
-            context.fillStyle =
-                definition.color;
+            context.fillStyle = color;
 
             context.fillRect(
                 offsetX +
-                col * size + 1,
+                    col * previewBlockSize +
+                    1,
                 offsetY +
-                row * size + 1,
-                size - 2,
-                size - 2
+                    row * previewBlockSize +
+                    1,
+                previewBlockSize - 2,
+                previewBlockSize - 2
             );
         }
     }
 }
 
-
-function drawNextPiece() {
-    drawPreview(
+function drawNextPreview() {
+    drawPreviewCanvas(
         nextCtx,
         nextPiece
     );
 }
 
-
-function drawHoldPiece() {
-    drawPreview(
+function drawHoldPreview() {
+    drawPreviewCanvas(
         holdCtx,
-        holdPiece
+        heldPiece
     );
 }
 
+/* =========================================================
+   HUD
+========================================================= */
 
-/*
-    --------------------------------------------------
-    UI
-    --------------------------------------------------
-*/
-
-function updateDisplays() {
-
-    scoreDisplay.textContent =
-        score;
-
-    linesDisplay.textContent =
-        lines;
-
-    levelDisplay.textContent =
-        level;
+function updateHUD() {
+    scoreDisplay.textContent = score;
+    linesDisplay.textContent = lines;
+    levelDisplay.textContent = level;
 }
 
-
-/*
-    --------------------------------------------------
-    MUSIC
-    --------------------------------------------------
-*/
-
-let musicEnabled = true;
+/* =========================================================
+   MUSIC
+========================================================= */
 
 function updateMusicButton() {
-
     musicToggle.textContent =
-        musicEnabled
-            ? "🔊"
-            : "🔇";
+        musicEnabled ? "🔊" : "🔇";
 
     musicToggle.setAttribute(
         "aria-label",
@@ -1041,21 +755,37 @@ function updateMusicButton() {
     );
 }
 
+async function startMusic() {
+    if (!musicEnabled) {
+        return;
+    }
+
+    try {
+        music.currentTime = 0;
+        await music.play();
+    } catch (error) {
+        console.warn(
+            "Music could not start:",
+            error
+        );
+    }
+}
+
+function stopMusic() {
+    music.pause();
+    music.currentTime = 0;
+}
 
 musicToggle.addEventListener(
     "click",
-    () => {
-
-        musicEnabled =
-            !musicEnabled;
+    async () => {
+        musicEnabled = !musicEnabled;
 
         if (musicEnabled) {
-
             if (gameRunning) {
-                music.play().catch(() => {});
+                await startMusic();
             }
-        }
-        else {
+        } else {
             music.pause();
         }
 
@@ -1063,144 +793,127 @@ musicToggle.addEventListener(
     }
 );
 
-
-/*
-    --------------------------------------------------
-    GAME START / RESTART
-    --------------------------------------------------
-*/
+/* =========================================================
+   START / RESTART
+========================================================= */
 
 function resetGame() {
+    if (animationFrame !== null) {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+    }
 
-    board =
-        createBoard();
+    board = createBoard();
 
-    score = 0;
-    lines = 0;
-    level = 1;
-
-    holdPiece = null;
     currentPiece = null;
     nextPiece = null;
+    heldPiece = null;
 
     bag = [];
 
     canHold = true;
 
-    dropTimer = 0;
-    lastTime = 0;
+    score = 0;
+    lines = 0;
+    level = 1;
 
-    gameOver = false;
+    dropTimer = 0;
+
     gameRunning = true;
+    gameEnded = false;
 
     gameOverScreen.hidden = true;
 
     startButton.disabled = true;
     startButton.textContent = "Playing...";
 
-    updateDisplays();
+    updateHUD();
 
-    drawHoldPiece();
+    drawHoldPreview();
 
-    nextPiece =
-        getNextType();
+    refillBag();
 
-    spawnNextPiece();
+    /*
+        Prepare the current and next pieces.
+    */
+    nextPiece = getNextPieceType();
 
-    if (musicEnabled) {
-        music.currentTime = 0;
+    spawnPiece();
 
-        music.play().catch(() => {});
-    }
+    drawBoard();
+
+    lastFrameTime = performance.now();
+
+    startMusic();
+
+    animationFrame =
+        requestAnimationFrame(gameLoop);
 }
 
-
-startButton.addEventListener(
-    "click",
-    () => {
-        resetGame();
-    }
-);
-
-
-restartButton.addEventListener(
-    "click",
-    () => {
-        resetGame();
-    }
-);
-
-
-/*
-    --------------------------------------------------
-    GAME OVER
-    --------------------------------------------------
-*/
-
 function endGame() {
-
-    if (gameOver) {
+    if (gameEnded) {
         return;
     }
 
-    gameOver = true;
+    gameEnded = true;
     gameRunning = false;
 
-    cancelAnimationFrame(
-        animationFrame
-    );
+    if (animationFrame !== null) {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+    }
 
-    music.pause();
+    stopMusic();
 
-    finalScoreDisplay.textContent =
-        score;
+    finalScoreDisplay.textContent = score;
 
     gameOverScreen.hidden = false;
 
     startButton.disabled = false;
-    startButton.textContent =
-        "Start Game";
+    startButton.textContent = "Start Game";
+
+    drawBoard();
 }
 
+startButton.addEventListener(
+    "click",
+    resetGame
+);
 
-/*
-    --------------------------------------------------
-    MAIN LOOP
-    --------------------------------------------------
-*/
+restartButton.addEventListener(
+    "click",
+    resetGame
+);
 
-function gameLoop(time = 0) {
+/* =========================================================
+   GAME LOOP
+========================================================= */
 
+function gameLoop(currentTime) {
     if (!gameRunning) {
         return;
     }
 
-    const delta =
-        time - lastTime;
+    const deltaTime =
+        currentTime - lastFrameTime;
 
-    lastTime = time;
+    lastFrameTime = currentTime;
 
-    update(delta);
+    update(deltaTime);
 
     drawBoard();
 
     animationFrame =
-        requestAnimationFrame(
-            gameLoop
-        );
+        requestAnimationFrame(gameLoop);
 }
 
-
-/*
-    --------------------------------------------------
-    KEYBOARD CONTROLS
-    --------------------------------------------------
-*/
+/* =========================================================
+   KEYBOARD CONTROLS
+========================================================= */
 
 document.addEventListener(
     "keydown",
-    (event) => {
-
+    event => {
         if (!gameRunning) {
             return;
         }
@@ -1209,9 +922,8 @@ document.addEventListener(
             event.key.toLowerCase();
 
         /*
-            Prevent these controls from
-            scrolling or interacting with
-            the page.
+            Prevent browser scrolling from
+            the Tetris keyboard controls.
         */
         if (
             key === "w" ||
@@ -1225,7 +937,6 @@ document.addEventListener(
         }
 
         switch (key) {
-
             case "a":
                 movePiece(-1);
                 break;
@@ -1253,22 +964,14 @@ document.addEventListener(
     }
 );
 
+/* =========================================================
+   MOBILE CONTROLS
+========================================================= */
 
-/*
-    --------------------------------------------------
-    MOBILE / BUTTON CONTROLS
-    --------------------------------------------------
-*/
-
-function bindButton(
-    button,
-    action
-) {
-
+function bindControl(button, action) {
     button.addEventListener(
         "pointerdown",
         event => {
-
             event.preventDefault();
 
             action();
@@ -1276,52 +979,48 @@ function bindButton(
     );
 }
 
-
-bindButton(
+bindControl(
     moveLeftButton,
     () => movePiece(-1)
 );
 
-bindButton(
+bindControl(
     moveRightButton,
     () => movePiece(1)
 );
 
-bindButton(
+bindControl(
     rotateCcwButton,
     () => rotatePiece(-1)
 );
 
-bindButton(
+bindControl(
     rotateCwButton,
     () => rotatePiece(1)
 );
 
-bindButton(
+bindControl(
     softDropButton,
     () => softDrop()
 );
 
-bindButton(
+bindControl(
     hardDropButton,
     () => hardDrop()
 );
 
-bindButton(
+bindControl(
     holdButton,
     () => holdCurrentPiece()
 );
 
+/* =========================================================
+   INITIAL STATE
+========================================================= */
 
-/*
-    --------------------------------------------------
-    INITIAL DISPLAY
-    --------------------------------------------------
-*/
-
+updateHUD();
 updateMusicButton();
-updateDisplays();
 
 drawBoard();
-drawNextPiece();
-drawHoldPiece();
+drawNextPreview();
+drawHoldPreview();
