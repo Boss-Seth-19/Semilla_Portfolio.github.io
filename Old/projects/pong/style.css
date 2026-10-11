@@ -1,0 +1,303 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: #0B1026;
+    color: #F8FAFC;
+
+    font-family: Arial, sans-serif;
+
+    overflow-x: hidden;
+}
+
+.pong-game {
+    width: min(900px, 100%);
+    text-align: center;
+}
+
+.game-header {
+    margin-bottom: 15px;
+}
+
+.game-header h1 {
+    margin: 0;
+
+    font-size: 36px;
+}
+
+.scoreboard {
+    display: flex;
+    justify-content: center;
+    gap: 80px;
+
+    margin-bottom: 15px;
+}
+
+.score-box {
+    min-width: 100px;
+    padding: 10px 20px;
+
+    background: #111936;
+
+    border: 1px solid #252D50;
+    border-radius: 10px;
+}
+
+.score-box span {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #94A3B8;
+
+    font-size: 12px;
+    font-weight: bold;
+
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.score-box strong {
+    font-size: 28px;
+}
+
+.game-area {
+    width: 100%;
+
+    padding: 8px;
+
+    background: #111936;
+
+    border: 2px solid #4F46E5;
+    border-radius: 12px;
+
+    box-shadow:
+        0 0 20px rgba(79, 70, 229, 0.15);
+}
+
+#pong-board {
+    display: block;
+
+    width: 100%;
+    height: auto;
+
+    background: #071331;
+
+    border-radius: 6px;
+}
+
+.controls {
+    margin-top: 12px;
+}
+
+.desktop-controls {
+    margin: 0;
+
+    color: #94A3B8;
+
+    font-size: 13px;
+}
+
+.mobile-controls {
+    display: none;
+
+    justify-content: center;
+    gap: 10px;
+
+    margin-top: 10px;
+}
+
+.mobile-controls button {
+    min-width: 65px;
+    min-height: 46px;
+
+    border: 1px solid #4F46E5;
+    border-radius: 8px;
+
+    background: #111936;
+    color: #F8FAFC;
+
+    font-size: 20px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    touch-action: manipulation;
+    user-select: none;
+
+    transition: 0.15s ease;
+}
+
+.mobile-controls button:active {
+    background: #4F46E5;
+    transform: scale(0.96);
+}
+
+.game-status {
+    margin-top: 15px;
+}
+
+#status-text {
+    margin: 0 0 10px;
+
+    color: #94A3B8;
+}
+
+#start-button,
+#restart-button {
+    padding: 11px 20px;
+
+    border: 1px solid #4F46E5;
+    border-radius: 8px;
+
+    background: #4F46E5;
+    color: #F8FAFC;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+#start-button:hover,
+#restart-button:hover {
+    background: #7C3AED;
+    border-color: #7C3AED;
+}
+
+.game-over-screen {
+    margin-top: 15px;
+    padding: 20px;
+
+    background: #111936;
+
+    border: 1px solid #7C3AED;
+    border-radius: 12px;
+
+    text-align: center;
+}
+
+.game-over-screen h2 {
+    margin: 0 0 8px;
+
+    font-size: 26px;
+}
+
+.game-over-screen p {
+    margin: 0 0 15px;
+
+    color: #94A3B8;
+}
+
+/* ==============================
+   MOBILE
+============================== */
+
+@media (max-width: 700px) {
+
+    body {
+        padding: 10px;
+        align-items: flex-start;
+    }
+
+    .pong-game {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .game-header {
+        margin-bottom: 8px;
+    }
+
+    .game-header h1 {
+        font-size: 28px;
+    }
+
+    .scoreboard {
+        gap: 30px;
+        margin-bottom: 10px;
+    }
+
+    .score-box {
+        min-width: 85px;
+        padding: 7px 15px;
+    }
+
+    .score-box strong {
+        font-size: 22px;
+    }
+
+    .game-area {
+        padding: 5px;
+    }
+
+    .desktop-controls {
+        display: none;
+    }
+
+    .mobile-controls {
+        display: flex;
+    }
+
+    .game-status {
+        margin-top: 10px;
+    }
+}
+
+/* ==============================
+   SMALL PHONES
+============================== */
+
+@media (max-width: 380px) {
+
+    body {
+        padding: 6px;
+    }
+
+    .game-header h1 {
+        font-size: 24px;
+    }
+
+    .scoreboard {
+        gap: 15px;
+    }
+
+    .score-box {
+        min-width: 75px;
+        padding: 6px 10px;
+    }
+
+    .score-box span {
+        font-size: 10px;
+    }
+
+    .score-box strong {
+        font-size: 20px;
+    }
+
+    .mobile-controls button {
+        min-width: 58px;
+        min-height: 42px;
+        font-size: 18px;
+    }
+}

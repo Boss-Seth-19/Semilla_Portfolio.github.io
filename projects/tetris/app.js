@@ -35,10 +35,6 @@ const BLOCK_SIZE = 30;
 /*
 ==========================================================
 SRS PIECES
-
-JLSTZ use 3x3 matrices.
-I uses 4x4.
-O stays unchanged visually.
 ==========================================================
 */
 
@@ -119,18 +115,9 @@ const TYPES = Object.keys(PIECES);
 /*
 ==========================================================
 SRS KICK TABLES
-
-Coordinates are stored as [x, y] where positive y means
-DOWN on our canvas.
-
-The standard SRS tables are converted from the usual
-mathematical coordinate system into screen coordinates.
 ==========================================================
 */
 
-/*
-JLSTZ / T / S / Z
-*/
 const JLSTZ_KICKS = {
     "0->1": [
         [0, 0],
@@ -197,9 +184,6 @@ const JLSTZ_KICKS = {
     ]
 };
 
-/*
-I PIECE
-*/
 const I_KICKS = {
     "0->1": [
         [0, 0],
@@ -296,6 +280,244 @@ let musicEnabled = true;
 
 /*
 ==========================================================
+SFX AUDIO
+==========================================================
+*/
+
+let audioContext = null;
+
+function getAudioContext() {
+    if (!audioContext) {
+        const AudioContext =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+        if (!AudioContext) {
+            return null;
+        }
+
+        audioContext = new AudioContext();
+    }
+
+    return audioContext;
+}
+
+function playTone(
+    frequency,
+    duration = 0.06,
+    type = "square",
+    volume = 0.06,
+    delay = 0
+) {
+    const audio = getAudioContext();
+
+    if (!audio) {
+        return;
+    }
+
+    if (audio.state === "suspended") {
+        audio.resume().catch(() => {});
+    }
+
+    const oscillator =
+        audio.createOscillator();
+
+    const gain =
+        audio.createGain();
+
+    const startTime =
+        audio.currentTime + delay;
+
+    oscillator.type = type;
+
+    oscillator.frequency.setValueAtTime(
+        frequency,
+        startTime
+    );
+
+    gain.gain.setValueAtTime(
+        volume,
+        startTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        startTime + duration
+    );
+
+    oscillator.connect(gain);
+    gain.connect(audio.destination);
+
+    oscillator.start(startTime);
+
+    oscillator.stop(
+        startTime + duration
+    );
+}
+
+function playRotateSound() {
+    playTone(
+        520,
+        0.045,
+        "square",
+        0.035
+    );
+}
+
+function playHoldSound() {
+    playTone(
+        380,
+        0.045,
+        "square",
+        0.035
+    );
+
+    playTone(
+        560,
+        0.06,
+        "square",
+        0.035,
+        0.045
+    );
+}
+
+function playHardDropSound() {
+    playTone(
+        150,
+        0.07,
+        "square",
+        0.06
+    );
+}
+
+function playLockSound() {
+    playTone(
+        190,
+        0.045,
+        "square",
+        0.035
+    );
+}
+
+function playLineClearSound(count) {
+    if (count === 1) {
+        playTone(
+            520,
+            0.08,
+            "square",
+            0.05
+        );
+
+        return;
+    }
+
+    if (count === 2) {
+        playTone(
+            520,
+            0.07,
+            "square",
+            0.05
+        );
+
+        playTone(
+            680,
+            0.09,
+            "square",
+            0.05,
+            0.08
+        );
+
+        return;
+    }
+
+    if (count === 3) {
+        playTone(
+            520,
+            0.07,
+            "square",
+            0.05
+        );
+
+        playTone(
+            680,
+            0.07,
+            "square",
+            0.05,
+            0.08
+        );
+
+        playTone(
+            820,
+            0.11,
+            "square",
+            0.05,
+            0.16
+        );
+
+        return;
+    }
+
+    if (count === 4) {
+        playTone(
+            440,
+            0.08,
+            "square",
+            0.055
+        );
+
+        playTone(
+            660,
+            0.08,
+            "square",
+            0.055,
+            0.09
+        );
+
+        playTone(
+            880,
+            0.10,
+            "square",
+            0.06,
+            0.18
+        );
+
+        playTone(
+            1175,
+            0.18,
+            "square",
+            0.07,
+            0.30
+        );
+    }
+}
+
+function playGameOverSound() {
+    playTone(
+        520,
+        0.12,
+        "square",
+        0.05
+    );
+
+    playTone(
+        390,
+        0.12,
+        "square",
+        0.05,
+        0.13
+    );
+
+    playTone(
+        260,
+        0.20,
+        "square",
+        0.06,
+        0.26
+    );
+}
+
+/*
+==========================================================
 BOARD
 ==========================================================
 */
@@ -316,8 +538,15 @@ function createBoard() {
 function shuffle(array) {
     const result = [...array];
 
-    for (let i = result.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+    for (
+        let i = result.length - 1;
+        i > 0;
+        i--
+    ) {
+        const j =
+            Math.floor(
+                Math.random() * (i + 1)
+            );
 
         [result[i], result[j]] =
             [result[j], result[i]];
@@ -345,22 +574,30 @@ function createPiece(type) {
 
     let x;
 
-    /*
-        SRS-style spawn positions.
-    */
     if (type === "I") {
-        x = Math.floor(COLS / 2) - 2;
+        x =
+            Math.floor(COLS / 2) - 2;
     } else if (type === "O") {
-        x = Math.floor(COLS / 2) - 1;
+        x =
+            Math.floor(COLS / 2) - 1;
     } else {
-        x = Math.floor(COLS / 2) - 1;
+        x =
+            Math.floor(COLS / 2) - 1;
     }
 
     return {
         type,
-        color: definition.color,
-        shape: definition.shape.map(row => [...row]),
+
+        color:
+            definition.color,
+
+        shape:
+            definition.shape.map(
+                row => [...row]
+            ),
+
         rotation: 0,
+
         x,
         y: 0
     };
@@ -378,9 +615,16 @@ function isCollision(
     offsetY = 0,
     shape = piece.shape
 ) {
-    for (let row = 0; row < shape.length; row++) {
-        for (let col = 0; col < shape[row].length; col++) {
-
+    for (
+        let row = 0;
+        row < shape.length;
+        row++
+    ) {
+        for (
+            let col = 0;
+            col < shape[row].length;
+            col++
+        ) {
             if (!shape[row][col]) {
                 continue;
             }
@@ -395,7 +639,10 @@ function isCollision(
                 row +
                 offsetY;
 
-            if (x < 0 || x >= COLS) {
+            if (
+                x < 0 ||
+                x >= COLS
+            ) {
                 return true;
             }
 
@@ -403,7 +650,10 @@ function isCollision(
                 return true;
             }
 
-            if (y >= 0 && board[y][x] !== null) {
+            if (
+                y >= 0 &&
+                board[y][x] !== null
+            ) {
                 return true;
             }
         }
@@ -424,7 +674,10 @@ function rotateClockwise(matrix) {
             matrix
                 .slice()
                 .reverse()
-                .map(row => row[column])
+                .map(
+                    row =>
+                        row[column]
+                )
     );
 }
 
@@ -434,7 +687,11 @@ function rotateCounterClockwise(matrix) {
             (_, column) =>
                 matrix.map(
                     row =>
-                        row[row.length - 1 - column]
+                        row[
+                            row.length -
+                            1 -
+                            column
+                        ]
                 )
         )
         .reverse();
@@ -447,14 +704,16 @@ SRS ROTATION
 */
 
 function rotatePiece(direction) {
-    if (!running || !currentPiece) {
+    if (
+        !running ||
+        !currentPiece
+    ) {
         return;
     }
 
-    /*
-        O does not visibly rotate.
-    */
-    if (currentPiece.type === "O") {
+    if (
+        currentPiece.type === "O"
+    ) {
         return;
     }
 
@@ -473,8 +732,12 @@ function rotatePiece(direction) {
 
     const newShape =
         direction === 1
-            ? rotateClockwise(currentPiece.shape)
-            : rotateCounterClockwise(currentPiece.shape);
+            ? rotateClockwise(
+                currentPiece.shape
+            )
+            : rotateCounterClockwise(
+                currentPiece.shape
+            );
 
     const key =
         `${oldRotation}->${newRotation}`;
@@ -484,8 +747,10 @@ function rotatePiece(direction) {
             ? I_KICKS[key]
             : JLSTZ_KICKS[key];
 
-    for (const [offsetX, offsetY] of kicks) {
-
+    for (
+        const [offsetX, offsetY]
+        of kicks
+    ) {
         if (
             !isCollision(
                 currentPiece,
@@ -506,6 +771,8 @@ function rotatePiece(direction) {
             currentPiece.rotation =
                 newRotation;
 
+            playRotateSound();
+
             draw();
 
             return;
@@ -520,57 +787,97 @@ MOVEMENT
 */
 
 function moveLeft() {
-    if (!running || !currentPiece) {
+    if (
+        !running ||
+        !currentPiece
+    ) {
         return;
     }
 
-    if (!isCollision(currentPiece, -1, 0)) {
+    if (
+        !isCollision(
+            currentPiece,
+            -1,
+            0
+        )
+    ) {
         currentPiece.x--;
         draw();
     }
 }
 
 function moveRight() {
-    if (!running || !currentPiece) {
+    if (
+        !running ||
+        !currentPiece
+    ) {
         return;
     }
 
-    if (!isCollision(currentPiece, 1, 0)) {
+    if (
+        !isCollision(
+            currentPiece,
+            1,
+            0
+        )
+    ) {
         currentPiece.x++;
         draw();
     }
 }
 
 function softDrop() {
-    if (!running || !currentPiece) {
+    if (
+        !running ||
+        !currentPiece
+    ) {
         return;
     }
 
-    if (!isCollision(currentPiece, 0, 1)) {
+    if (
+        !isCollision(
+            currentPiece,
+            0,
+            1
+        )
+    ) {
         currentPiece.y++;
 
         score++;
 
         updateHUD();
         draw();
+
     } else {
         lockPiece();
     }
 }
 
 function hardDrop() {
-    if (!running || !currentPiece) {
+    if (
+        !running ||
+        !currentPiece
+    ) {
         return;
     }
 
     let distance = 0;
 
-    while (!isCollision(currentPiece, 0, 1)) {
+    while (
+        !isCollision(
+            currentPiece,
+            0,
+            1
+        )
+    ) {
         currentPiece.y++;
         distance++;
     }
 
-    score += distance * 2;
+    score +=
+        distance * 2;
+
+    playHardDropSound();
 
     lockPiece();
 }
@@ -600,7 +907,7 @@ function holdCurrentPiece() {
         holdType =
             currentType;
 
-        spawnPiece();
+        spawnPiece(false);
 
     } else {
 
@@ -611,13 +918,21 @@ function holdCurrentPiece() {
             currentType;
 
         currentPiece =
-            createPiece(swapType);
+            createPiece(
+                swapType
+            );
 
-        if (isCollision(currentPiece)) {
+        if (
+            isCollision(
+                currentPiece
+            )
+        ) {
             endGame();
             return;
         }
     }
+
+    playHoldSound();
 
     drawHoldPreview();
     draw();
@@ -629,18 +944,32 @@ SPAWN
 ==========================================================
 */
 
-function spawnPiece() {
+function spawnPiece(
+    resetHold = true
+) {
     currentPiece =
-        createPiece(nextType);
+        createPiece(
+            nextType
+        );
 
     nextType =
         getPieceType();
 
-    canHold = true;
+    if (resetHold) {
+        /*
+            A newly locked piece allows
+            one new hold.
+        */
+        canHold = true;
+    }
 
     drawNextPreview();
 
-    if (isCollision(currentPiece)) {
+    if (
+        isCollision(
+            currentPiece
+        )
+    ) {
         endGame();
     }
 }
@@ -658,23 +987,29 @@ function lockPiece() {
 
     for (
         let row = 0;
-        row < currentPiece.shape.length;
+        row <
+        currentPiece.shape.length;
         row++
     ) {
         for (
             let col = 0;
-            col < currentPiece.shape[row].length;
+            col <
+            currentPiece.shape[row].length;
             col++
         ) {
-            if (!currentPiece.shape[row][col]) {
+            if (
+                !currentPiece.shape[row][col]
+            ) {
                 continue;
             }
 
             const x =
-                currentPiece.x + col;
+                currentPiece.x +
+                col;
 
             const y =
-                currentPiece.y + row;
+                currentPiece.y +
+                row;
 
             if (
                 y >= 0 &&
@@ -688,9 +1023,25 @@ function lockPiece() {
         }
     }
 
-    clearLines();
+    playLockSound();
 
-    spawnPiece();
+    const cleared =
+        clearLines();
+
+    if (cleared > 0) {
+        playLineClearSound(
+            cleared
+        );
+    }
+
+    /*
+        After a normal lock,
+        the next spawned piece
+        may hold again.
+    */
+    canHold = true;
+
+    spawnPiece(false);
 
     fallTimer = 0;
 
@@ -714,13 +1065,19 @@ function clearLines() {
     ) {
         if (
             board[row].every(
-                cell => cell !== null
+                cell =>
+                    cell !== null
             )
         ) {
-            board.splice(row, 1);
+            board.splice(
+                row,
+                1
+            );
 
             board.unshift(
-                Array(COLS).fill(null)
+                Array(COLS).fill(
+                    null
+                )
             );
 
             cleared++;
@@ -730,7 +1087,7 @@ function clearLines() {
     }
 
     if (cleared === 0) {
-        return;
+        return 0;
     }
 
     const points = {
@@ -741,15 +1098,22 @@ function clearLines() {
     };
 
     score +=
-        (points[cleared] || 0) *
-        level;
+        (
+            points[cleared] ||
+            0
+        ) * level;
 
-    lines += cleared;
+    lines +=
+        cleared;
 
     level =
-        Math.floor(lines / 10) + 1;
+        Math.floor(
+            lines / 10
+        ) + 1;
 
     updateHUD();
+
+    return cleared;
 }
 
 /*
@@ -760,53 +1124,63 @@ GRAVITY
 
 function getFallDelay() {
     const gravityFrames = [
-        48, // level 0
-        43, // level 1
-        38, // level 2
-        33, // level 3
-        28, // level 4
-        23, // level 5
-        18, // level 6
-        13, // level 7
-        8,  // level 8
-        6,  // level 9
-        5,  // level 10
-        5,  // level 11
-        5,  // level 12
-        4,  // level 13
-        4,  // level 14
-        4,  // level 15
-        3,  // level 16
-        3,  // level 17
-        3,  // level 18
-        2,  // level 19
-        2,  // level 20
-        2,  // level 21
-        2,  // level 22
-        2,  // level 23
-        2,  // level 24
-        2,  // level 25
-        2,  // level 26
-        2,  // level 27
-        2,  // level 28
-        1   // level 29
+        48,
+        43,
+        38,
+        33,
+        28,
+        23,
+        18,
+        13,
+        8,
+        6,
+        5,
+        5,
+        5,
+        4,
+        4,
+        4,
+        3,
+        3,
+        3,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        1
     ];
 
     const index =
-        Math.min(level, gravityFrames.length - 1);
+        Math.min(
+            level,
+            gravityFrames.length - 1
+        );
 
     const framesPerCell =
         gravityFrames[index];
 
-    return framesPerCell * (1000 / 60);
+    return (
+        framesPerCell *
+        (1000 / 60)
+    );
 }
 
 function update(deltaTime) {
-    if (!running || !currentPiece) {
+    if (
+        !running ||
+        !currentPiece
+    ) {
         return;
     }
 
-    fallTimer += deltaTime;
+    fallTimer +=
+        deltaTime;
 
     if (
         fallTimer <
@@ -842,8 +1216,11 @@ function getGhostPiece() {
     }
 
     const ghost = {
-        type: currentPiece.type,
-        color: currentPiece.color,
+        type:
+            currentPiece.type,
+
+        color:
+            currentPiece.color,
 
         shape:
             currentPiece.shape.map(
@@ -853,8 +1230,11 @@ function getGhostPiece() {
         rotation:
             currentPiece.rotation,
 
-        x: currentPiece.x,
-        y: currentPiece.y
+        x:
+            currentPiece.x,
+
+        y:
+            currentPiece.y
     };
 
     while (
@@ -930,10 +1310,13 @@ function drawPiece(
     ) {
         for (
             let col = 0;
-            col < piece.shape[row].length;
+            col <
+            piece.shape[row].length;
             col++
         ) {
-            if (!piece.shape[row][col]) {
+            if (
+                !piece.shape[row][col]
+            ) {
                 continue;
             }
 
@@ -1025,7 +1408,9 @@ function draw() {
             col < COLS;
             col++
         ) {
-            if (board[row][col]) {
+            if (
+                board[row][col]
+            ) {
                 drawBlock(
                     ctx,
                     col,
@@ -1087,7 +1472,9 @@ function drawPreview(
     context,
     type
 ) {
-    clearPreview(context);
+    clearPreview(
+        context
+    );
 
     if (!type) {
         return;
@@ -1125,10 +1512,13 @@ function drawPreview(
     ) {
         for (
             let col = 0;
-            col < shape[row].length;
+            col <
+            shape[row].length;
             col++
         ) {
-            if (!shape[row][col]) {
+            if (
+                !shape[row][col]
+            ) {
                 continue;
             }
 
@@ -1137,11 +1527,13 @@ function drawPreview(
 
             context.fillRect(
                 offsetX +
-                    col * size +
+                    col *
+                    size +
                     1,
 
                 offsetY +
-                    row * size +
+                    row *
+                    size +
                     1,
 
                 size - 2,
@@ -1211,7 +1603,9 @@ musicToggle.addEventListener(
         if (!musicEnabled) {
             music.pause();
         } else if (running) {
-            music.play().catch(() => {});
+            music
+                .play()
+                .catch(() => {});
         }
 
         updateMusicButton();
@@ -1225,12 +1619,14 @@ function startMusic() {
 
     music.currentTime = 0;
 
-    music.play().catch(error => {
-        console.warn(
-            "Music playback blocked:",
-            error
-        );
-    });
+    music
+        .play()
+        .catch(error => {
+            console.warn(
+                "Music playback blocked:",
+                error
+            );
+        });
 }
 
 function stopMusic() {
@@ -1284,13 +1680,10 @@ function startGame() {
 
     drawHoldPreview();
 
-    /*
-        First piece.
-    */
     nextType =
         getPieceType();
 
-    spawnPiece();
+    spawnPiece(true);
 
     drawNextPreview();
     draw();
@@ -1299,6 +1692,18 @@ function startGame() {
         performance.now();
 
     startMusic();
+
+    /*
+        Prepare the audio context
+        after the user's Start click.
+    */
+    const audio =
+        getAudioContext();
+
+    if (audio &&
+        audio.state === "suspended") {
+        audio.resume().catch(() => {});
+    }
 
     animationId =
         requestAnimationFrame(
@@ -1330,13 +1735,17 @@ function endGame() {
 
     stopMusic();
 
+    playGameOverSound();
+
     finalScoreDisplay.textContent =
         score;
 
     gameOverScreen.hidden =
         false;
 
-    startButton.disabled = false;
+    startButton.disabled =
+        false;
+
     startButton.textContent =
         "Start Game";
 }
@@ -1385,9 +1794,6 @@ document.addEventListener(
         const key =
             event.key.toLowerCase();
 
-        /*
-            Prevent scrolling.
-        */
         if (
             key === "w" ||
             key === "a" ||
@@ -1427,7 +1833,9 @@ document.addEventListener(
                 break;
         }
 
-        if (event.code === "Space") {
+        if (
+            event.code === "Space"
+        ) {
             hardDrop();
         }
     }
@@ -1464,12 +1872,14 @@ bindControl(
 
 bindControl(
     rotateCcwButton,
-    () => rotatePiece(-1)
+    () =>
+        rotatePiece(-1)
 );
 
 bindControl(
     rotateCwButton,
-    () => rotatePiece(1)
+    () =>
+        rotatePiece(1)
 );
 
 bindControl(

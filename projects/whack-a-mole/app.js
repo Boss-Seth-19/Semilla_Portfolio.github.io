@@ -1,0 +1,15 @@
+(()=>{'use strict';
+const board=document.querySelector('#board'),scoreEl=document.querySelector('#score'),timeEl=document.querySelector('#time'),bestEl=document.querySelector('#best'),start=document.querySelector('#start'),message=document.querySelector('#message'),title=document.querySelector('#message-title'),messageText=document.querySelector('#message-text');
+const preview=new URLSearchParams(location.search).get('preview')==='static';
+let score=0,time=30,best=0,running=false,clock=null,popper=null,active=new Set(),streak=0,lastHit=0;
+try{best=Number(localStorage.getItem('fairyWhackBest')||0)}catch(_){} if(bestEl)bestEl.textContent=best;
+const holes=[];
+for(let i=0;i<9;i++){const hole=document.createElement('button');hole.className='hole';hole.type='button';hole.setAttribute('aria-label',`Mole hole ${i+1}`);hole.setAttribute('aria-pressed','false');hole.addEventListener('click',()=>whack(i));board.appendChild(hole);holes.push(hole)}
+function paint(){holes.forEach((hole,i)=>{const on=active.has(i);hole.classList.toggle('active',on);hole.classList.toggle('pop',on);hole.setAttribute('aria-pressed',String(on));hole.textContent=on?'🐹':'';hole.setAttribute('aria-label',on?`Whack mole in hole ${i+1}`:`Empty hole ${i+1}`)})}
+function whack(i){if(!running||!active.has(i))return;active.delete(i);const now=Date.now();streak=now-lastHit<1250?streak+1:1;lastHit=now;const points=10+Math.min(20,(streak-1)*2);score+=points;scoreEl.textContent=score;const h=holes[i];h.classList.remove('pop');h.classList.add('hit');h.textContent='✨';setTimeout(()=>{h.classList.remove('hit');if(!active.has(i))h.textContent=''},240);paint();}
+function schedulePop(){if(!running)return;active.clear();const first=Math.floor(Math.random()*holes.length);active.add(first);const difficulty=score;const extraChance=Math.min(.62,.2+difficulty/650);if(Math.random()<extraChance){let second;do{second=Math.floor(Math.random()*holes.length)}while(active.has(second));active.add(second)}if(score>180&&Math.random()<.16){let third;do{third=Math.floor(Math.random()*holes.length)}while(active.has(third));active.add(third)}paint();const delay=Math.max(360,850-score*1.35);popper=setTimeout(schedulePop,delay)}
+function stop(){running=false;clearInterval(clock);clearTimeout(popper);active.clear();paint();if(score>best){best=score;bestEl.textContent=best;try{localStorage.setItem('fairyWhackBest',String(best))}catch(_){}}title.textContent='TIME UP!';messageText.textContent=`You scored ${score} points${streak>1?` — streak x${streak}!`:'.'}`;message.hidden=false;start.textContent='Play Again'}
+function begin(){clearInterval(clock);clearTimeout(popper);score=0;time=30;streak=0;lastHit=0;active.clear();running=true;scoreEl.textContent='0';timeEl.textContent='30';message.hidden=true;start.textContent='Restart';schedulePop();clock=setInterval(()=>{time--;timeEl.textContent=time;if(time<=0)stop()},1000)}
+start.addEventListener('click',begin);
+if(preview){document.documentElement.classList.add('arcade-preview-mode');document.body.classList.add('arcade-preview-mode');active=new Set([1,3,7]);paint()}
+})();

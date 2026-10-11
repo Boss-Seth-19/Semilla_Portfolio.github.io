@@ -1,16 +1,15 @@
 {
   "name": "website-and-chatbot",
-  "version": "1.0.0",
-  "description": "",
+  "version": "3.11.0",
+  "description": "Fairy's Arcade \u2014 original nine previews restored; centered Galaga pause overlay, full-size 2048 preview, rebuilt Whack-a-Mole",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "test": "node --check script.js && node --check server.js && node --check projects/galaga/app.js && node --check projects/2048/app.js && node --check projects/frogger/app.js && node --check projects/dinosaur/app.js && node --check projects/doodle-jumper/app.js && node --check projects/whack-a-mole/app.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
-  "dependencies": {
-    "express": "^5.2.1"
-  }
+  "dependencies": {}
 }

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Minesweeper</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main class="minesweeper-game">
+
+        <header class="game-header">
+            <h1>Minesweeper</h1>
+        </header>
+
+        <section class="game-toolbar">
+
+            <div class="stat-box">
+                <span>Mines</span>
+                <strong id="mine-count">10</strong>
+            </div>
+
+            <div class="stat-box">
+                <span>Time</span>
+                <strong id="timer">0</strong>
+            </div>
+
+            <button
+                id="restart-button"
+                type="button"
+                aria-label="Restart game">
+                🙂
+            </button>
+
+        </section>
+
+        <section class="game-board-wrapper">
+            <div
+                id="minesweeper-board"
+                class="minesweeper-board"
+                aria-label="Minesweeper board">
+            </div>
+        </section>
+
+        <section class="mobile-tools">
+
+            <button
+                id="reveal-mode"
+                type="button"
+                class="mode-button active">
+                Reveal
+            </button>
+
+            <button
+                id="flag-mode"
+                type="button"
+                class="mode-button">
+                Flag
+            </button>
+
+        </section>
+
+        <p id="status-text" class="status-text">
+            Find all the mines.
+        </p>
+
+        <section
+            id="game-over-screen"
+            class="game-over-screen"
+            hidden>
+
+            <h2 id="result-title">
+                Game Over
+            </h2>
+
+            <p id="result-text">
+                Try again.
+            </p>
+
+            <button
+                id="new-game-button"
+                type="button">
+                New Game
+            </button>
+
+        </section>
+
+    </main>
+
+    <script src="app.js"></script>
+
+</body>
+</html>

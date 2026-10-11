@@ -188,6 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 status.textContent =
                     `Player ${currentPlayer} wins!`;
 
+                [a, b, c].forEach(index => cells[index].classList.add("winning-cell"));
                 gameActive = false;
 
                 playWinSound();
@@ -237,7 +238,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             cell.classList.remove(
                 "x",
-                "o"
+                "o",
+                "winning-cell"
             );
         });
 

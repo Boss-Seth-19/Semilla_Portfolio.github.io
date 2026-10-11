@@ -141,6 +141,11 @@ function playRestartSound() {
 }
 
 
+function getBestScore() {
+    try { return Number(localStorage.getItem("fairys-arcade-snake-best")) || 0; }
+    catch (_) { return 0; }
+}
+
 /* =========================================================
    GAME SETUP
 ========================================================= */
@@ -152,10 +157,8 @@ function prepareGame() {
         { x: 8, y: 10 }
     ];
 
-    food = {
-        x: Math.floor(Math.random() * tileCount),
-        y: Math.floor(Math.random() * tileCount)
-    };
+    food = { x: 0, y: 0 };
+    placeFood();
 
     direction = {
         x: 0,
@@ -187,7 +190,7 @@ function startGame() {
     gameStarted = true;
 
     status.textContent =
-        `Score: ${score}`;
+        `Score: ${score} · Best: ${getBestScore()}`;
 
     clearInterval(gameLoop);
 
@@ -242,8 +245,10 @@ function updateGame() {
     ) {
         score++;
 
+        const best = Math.max(getBestScore(), score);
+        try { localStorage.setItem("fairys-arcade-snake-best", String(best)); } catch (_) {}
         status.textContent =
-            `Score: ${score}`;
+            `Score: ${score} · Best: ${best}`;
 
         playFoodSound();
 
@@ -364,8 +369,10 @@ function endGame() {
 
     clearInterval(gameLoop);
 
+    const best = Math.max(getBestScore(), score);
+    try { localStorage.setItem("fairys-arcade-snake-best", String(best)); } catch (_) {}
     status.textContent =
-        `Game Over! Score: ${score}`;
+        `Game Over! Score: ${score} · Best: ${best}`;
 
     playGameOverSound();
 }

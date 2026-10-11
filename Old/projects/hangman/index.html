@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Hangman</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h1>Hangman</h1>
+
+    <div class="hangman-layout">
+
+        <div class="drawing-area">
+            <div class="gallows">
+                <div class="gallows-base"></div>
+                <div class="gallows-pole"></div>
+                <div class="gallows-top"></div>
+                <div class="gallows-rope"></div>
+
+                <div id="figure">
+                    <div class="head"></div>
+                    <div class="body"></div>
+                    <div class="left-arm"></div>
+                    <div class="right-arm"></div>
+                    <div class="left-leg"></div>
+                    <div class="right-leg"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-area">
+
+            <div id="status">Guess the word!</div>
+
+            <div id="word"></div>
+
+            <div id="letters"></div>
+
+            <div id="wrong-guesses">
+                Wrong guesses: <span id="wrong-count">0</span> / 6
+            </div>
+
+            <button id="restart-button">New Word</button>
+
+        </div>
+
+    </div>
+
+    <script src="app.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,468 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: #0B1026;
+    color: #F8FAFC;
+
+    font-family: Arial, sans-serif;
+
+    overflow-x: hidden;
+}
+
+.minesweeper-game {
+    width: min(520px, 100%);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.game-header {
+    margin-bottom: 15px;
+
+    text-align: center;
+}
+
+.game-header h1 {
+    margin: 0;
+
+    font-size: 34px;
+}
+
+/* ==============================
+   TOP BAR
+============================== */
+
+.game-toolbar {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr 52px;
+
+    gap: 10px;
+
+    margin-bottom: 12px;
+}
+
+.stat-box {
+    padding: 9px 12px;
+
+    background: #111936;
+
+    border: 1px solid #252D50;
+    border-radius: 10px;
+
+    text-align: center;
+}
+
+.stat-box span {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #94A3B8;
+
+    font-size: 11px;
+    font-weight: bold;
+
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-box strong {
+    font-size: 22px;
+}
+
+#restart-button {
+    border: 1px solid #4F46E5;
+    border-radius: 10px;
+
+    background: #111936;
+    color: #F8FAFC;
+
+    font-size: 24px;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+
+    touch-action: manipulation;
+}
+
+#restart-button:hover {
+    background: #4F46E5;
+}
+
+/* ==============================
+   BOARD
+============================== */
+
+.game-board-wrapper {
+    padding: 8px;
+
+    background: #111936;
+
+    border: 2px solid #4F46E5;
+    border-radius: 12px;
+
+    box-shadow:
+        0 0 20px rgba(79, 70, 229, 0.12);
+}
+
+.minesweeper-board {
+    width: 405px;
+    height: 405px;
+
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(9, 1fr);
+
+    gap: 2px;
+
+    padding: 2px;
+
+    background: #252D50;
+
+    border-radius: 6px;
+}
+
+/* ==============================
+   CELLS
+============================== */
+
+.mine-cell {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid #4F46E5;
+    border-radius: 2px;
+
+    background: #111936;
+    color: #F8FAFC;
+
+    font-size: 20px;
+    font-weight: 900;
+
+    cursor: pointer;
+
+    user-select: none;
+    -webkit-user-select: none;
+
+    transition:
+        background 0.08s ease,
+        transform 0.08s ease;
+}
+
+.mine-cell:hover {
+    background: #172044;
+}
+
+.mine-cell:active {
+    transform: scale(0.96);
+}
+
+.mine-cell.revealed {
+    background: #D7DCF2;
+
+    border-color: #AEB8DD;
+
+    color: #0B1026;
+
+    cursor: default;
+
+    transform: none;
+}
+
+/* ==============================
+   NUMBER COLORS
+============================== */
+
+.mine-cell.number-1 {
+    color: #2563EB;
+}
+
+.mine-cell.number-2 {
+    color: #16A34A;
+}
+
+.mine-cell.number-3 {
+    color: #DC2626;
+}
+
+.mine-cell.number-4 {
+    color: #7C3AED;
+}
+
+.mine-cell.number-5 {
+    color: #B45309;
+}
+
+.mine-cell.number-6 {
+    color: #0891B2;
+}
+
+.mine-cell.number-7 {
+    color: #111827;
+}
+
+.mine-cell.number-8 {
+    color: #64748B;
+}
+
+/* ==============================
+   FLAG / MINE
+============================== */
+
+.mine-cell.flagged {
+    background: #172044;
+
+    color: #F43F5E;
+}
+
+.mine-cell.mine {
+    background: #DC2626;
+
+    color: #FFFFFF;
+}
+
+.mine-cell.exploded {
+    background: #991B1B;
+
+    color: #FFFFFF;
+}
+
+/* ==============================
+   MOBILE TOOLS
+============================== */
+
+.mobile-tools {
+    display: none;
+
+    width: 100%;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    margin-top: 12px;
+}
+
+.mode-button {
+    min-width: 110px;
+    min-height: 42px;
+
+    padding: 9px 16px;
+
+    border: 1px solid #4F46E5;
+    border-radius: 8px;
+
+    background: #111936;
+    color: #F8FAFC;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    touch-action: manipulation;
+}
+
+.mode-button.active {
+    background: #4F46E5;
+}
+
+.mode-button:active {
+    transform: scale(0.97);
+}
+
+/* ==============================
+   STATUS
+============================== */
+
+.status-text {
+    margin: 14px 0 0;
+
+    color: #94A3B8;
+
+    font-size: 14px;
+
+    text-align: center;
+}
+
+/* ==============================
+   GAME OVER
+============================== */
+
+.game-over-screen {
+    width: 100%;
+
+    margin-top: 15px;
+    padding: 20px;
+
+    background: #111936;
+
+    border: 1px solid #7C3AED;
+    border-radius: 12px;
+
+    text-align: center;
+}
+
+.game-over-screen h2 {
+    margin: 0 0 8px;
+
+    font-size: 26px;
+}
+
+.game-over-screen p {
+    margin: 0 0 15px;
+
+    color: #94A3B8;
+}
+
+#new-game-button {
+    padding: 11px 20px;
+
+    border: 1px solid #4F46E5;
+    border-radius: 8px;
+
+    background: #4F46E5;
+    color: #F8FAFC;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+#new-game-button:hover {
+    background: #7C3AED;
+    border-color: #7C3AED;
+}
+
+/* ==============================
+   MOBILE
+============================== */
+
+@media (max-width: 520px) {
+
+    body {
+        padding: 10px;
+        align-items: flex-start;
+    }
+
+    .minesweeper-game {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .game-header {
+        margin-bottom: 10px;
+    }
+
+    .game-header h1 {
+        font-size: 28px;
+    }
+
+    .game-toolbar {
+        grid-template-columns: 1fr 1fr 46px;
+
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+
+    .stat-box {
+        padding: 7px 8px;
+    }
+
+    .stat-box span {
+        font-size: 9px;
+    }
+
+    .stat-box strong {
+        font-size: 19px;
+    }
+
+    #restart-button {
+        font-size: 20px;
+    }
+
+    .game-board-wrapper {
+        width: 100%;
+
+        padding: 5px;
+    }
+
+    .minesweeper-board {
+        width: 100%;
+        height: auto;
+
+        aspect-ratio: 1 / 1;
+    }
+
+    .mine-cell {
+        font-size: clamp(
+            15px,
+            5vw,
+            20px
+        );
+    }
+
+    .mobile-tools {
+        display: flex;
+    }
+}
+
+/* ==============================
+   SMALL PHONES
+============================== */
+
+@media (max-width: 380px) {
+
+    body {
+        padding: 6px;
+    }
+
+    .game-header h1 {
+        font-size: 24px;
+    }
+
+    .stat-box strong {
+        font-size: 17px;
+    }
+
+    .mode-button {
+        min-width: 95px;
+        min-height: 40px;
+
+        padding: 8px 12px;
+
+        font-size: 13px;
+    }
+}

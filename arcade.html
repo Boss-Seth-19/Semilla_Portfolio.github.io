@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/><meta content="#0b1026" name="theme-color"/><meta content="Play fifteen browser mini-games in Fairy's Arcade." name="description"/><title>Arcade | Fairy's Arcade</title><link href="images/fairy-logo.png" rel="icon" type="image/png"/><link href="images/fairy-logo.png" rel="apple-touch-icon"/><link href="style.css" rel="stylesheet"/></head><body>
+<aside aria-label="Arcade music player" class="music-player" id="music-player"><button aria-label="Minimize Arcade Radio" class="music-minimize" id="music-minimize" title="Minimize player" type="button">−</button><div class="music-player-label">♪ ARCADE RADIO</div><div class="music-track-title" id="music-track-title">Loading track…</div><div class="music-player-controls"><button aria-label="Previous track" id="music-prev" title="Previous track" type="button">◀</button><button aria-label="Play music" id="music-play" title="Play or pause" type="button">▶</button><button aria-label="Next track" id="music-next" title="Next track" type="button">▶|</button><button aria-label="Mute audio" id="audio-toggle" title="Mute or unmute" type="button">🔊</button></div><div class="music-player-hint">PLAYER 1 SOUND</div></aside><button aria-label="Open Arcade Radio" class="music-restore" id="music-restore" title="Open Arcade Radio" type="button">♫ <span>ARCADE RADIO</span></button><audio id="background-music" preload="metadata"></audio><nav aria-label="Main navigation" class="navbar">
+<a aria-label="Fairy's Arcade home" class="nav-brand" href="index.html"><img alt="" class="nav-brand-mark" src="images/fairy-logo.png"/><span class="nav-brand-copy"><strong>FAIRY'S ARCADE</strong><small>PLAYER PORTFOLIO</small></span></a>
+<button aria-controls="primary-navigation" aria-expanded="false" aria-label="Open navigation menu" class="nav-menu-toggle" type="button"><span></span><span></span><span></span></button>
+<div class="nav-links" id="primary-navigation">
+<a data-nav="home" href="index.html">Home</a>
+<a data-nav="arcade" href="arcade.html">Arcade</a>
+<div class="nav-dropdown" id="nav-about-group">
+<a data-nav="about" href="about.html" id="nav-about-link">About Me</a>
+<button aria-controls="nav-about-menu" aria-expanded="false" aria-label="Show Skills, Projects, and Contact" class="nav-dropdown-toggle" id="nav-about-toggle" type="button">▾</button>
+<div aria-label="More portfolio pages" class="nav-dropdown-menu" id="nav-about-menu">
+<a data-nav="skills" href="skills.html">Skills</a>
+<a data-nav="projects" href="projects.html">Projects</a>
+<a data-nav="contact" href="contact.html">Contact</a>
+</div>
+</div>
+</div>
+</nav><main class="page-shell"><section class="projects-section" id="arcade">
+<div class="section-title">
+<h2>Arcade</h2>
+<p>Fifteen classic mini-games. Pick a cabinet and press play.</p>
+</div>
+<div class="projects-container"><div class="project-card" data-game-tip="Game: Hangman — Guess the hidden word before you run out of tries. Tip: try common vowels early and use letter positions as clues.">
+<div class="project-preview">
+<div class="mini-hangman">
+<div class="mini-gallows-base"></div>
+<div class="mini-gallows-pole"></div>
+<div class="mini-gallows-top"></div>
+<div class="mini-gallows-rope"></div>
+<div class="mini-hangman-head"></div>
+<div class="mini-hangman-body"></div>
+<div class="mini-hangman-left-arm"></div>
+<div class="mini-hangman-right-arm"></div>
+<div class="mini-hangman-left-leg"></div>
+<div class="mini-hangman-right-leg"></div>
+</div>
+</div>
+<div class="project-info">
+<span>
+                        Game
+                    </span>
+<h3>
+                        Hangman
+                    </h3>
+<button id="hangman-button">
+                        Play Game
+                    </button>
+</div>
+</div><div class="project-card" data-game-tip="Game: Snake — Guide the snake to eat food and grow without hitting walls or itself. Tip: plan turns early and leave an escape route.">
+<div class="project-preview">
+<div class="mini-snake">
+<span class="snake-head"></span>
+<span class="snake-body"></span>
+<span class="snake-body"></span>
+<span class="snake-body"></span>
+<span class="snake-body"></span>
+<span class="snake-food"></span>
+</div>
+</div>
+<div class="project-info">
+<span>
+                        Game
+                    </span>
+<h3>
+                        Snake
+                    </h3>
+<button id="snake-button">
+                        Play Game
+                    </button>
+</div>
+</div><div class="project-card" data-game-tip="Game: Tic-Tac-Toe — Get three of your marks in a row. Tip: take the center or a corner and watch for forks.">
+<div class="project-preview">
+<div class="mini-tic-tac-toe">
+<span class="x">
+                            X
+                        </span>
+<span></span>
+<span class="o">
+                            O
+                        </span>
+<span></span>
+<span class="x">
+                            X
+                        </span>
+<span></span>
+<span class="o">
+                            O
+                        </span>
+<span></span>
+<span class="x">
+                            X
+                        </span>
+</div>
+</div>
+<div class="project-info">
+<span>
+                        Game
+                    </span>
+<h3>
+                        Tic-Tac-Toe
+                    </h3>
+<button id="tic-tac-toe-button">
+                        Play Game
+                    </button>
+</div>
+</div><div class="project-card" data-game-tip="Game: Rock Paper Scissors — Choose rock, paper, or scissors to beat the computer. Tip: mix up choices and avoid predictable patterns.">
+<div class="project-preview">
+<div class="mini-rock-paper-scissors">
+<span class="rps-icon">
+                            ●
+                        </span>
+<span class="rps-icon">
+                            ▤
+                        </span>
+<span class="rps-icon">
+                            ✂
+                        </span>
+</div>
+</div>
+<div class="project-info">
+<span>
+                        Game
+                    </span>
+<h3>
+                        Rock Paper Scissors
+                    </h3>
+<button id="rock-paper-scissors-button">
+                        Play Game
+                    </button>
+</div>
+</div><div class="project-card" data-game-tip="Game: Connect Four — Drop discs into columns and connect four in a row. Tip: build two-way threats and block an opponent’s immediate win.">
+<div class="project-preview connect-four-preview">
+<div class="mini-connect-four">
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+<span class="blue"></span>
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+<span class="purple"></span>
+<span></span>
+<span class="blue"></span>
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+<span class="purple"></span>
+<span class="blue"></span>
+<span class="purple"></span>
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+<span class="blue"></span>
+<span class="purple"></span>
+<span class="purple"></span>
+<span class="blue"></span>
+<span></span>
+<span></span>
+<span></span>
+<span class="purple"></span>
+<span class="blue"></span>
+<span class="blue"></span>
+<span class="purple"></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<div class="project-info">
+<span>
+                        Game
+                    </span>
+<h3>
+                        Connect Four
+                    </h3>
+<button id="connect-four-button">
+                        Play Game
+                    </button>
+</div>
+</div><div class="project-card" data-game-tip="Game: Brick Breaker — Bounce the ball to clear the bricks. Tip: aim for gaps and use paddle position to influence the ball angle.">
+<div class="project-preview">
+<div class="mini-brick-breaker">
+<div class="mini-bricks">
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+</div>
+<div class="mini-ball"></div>
+<div class="mini-paddle"></div>
+</div>
+</div>
+<div class="project-info">
+<span>
+                        Game
+                    </span>
+<h3>
+                        Brick Breaker
+                    </h3>
+<button id="brick-breaker-button">
+                        Play Game
+                    </button>
+</div>
+</div><div class="project-card" data-game-tip="Game: Tetris — Arrange falling blocks to complete horizontal lines. Tip: keep the stack low and leave a clean well for long pieces.">
+<div class="project-preview tetris-preview">
+<div class="mini-tetris">
+<span class="tetris-block cyan b1"></span>
+<span class="tetris-block cyan b2"></span>
+<span class="tetris-block cyan b3"></span>
+<span class="tetris-block cyan b4"></span>
+<span class="tetris-block purple b5"></span>
+<span class="tetris-block purple b6"></span>
+<span class="tetris-block purple b7"></span>
+<span class="tetris-block purple b8"></span>
+<span class="tetris-block yellow b9"></span>
+<span class="tetris-block yellow b10"></span>
+<span class="tetris-block yellow b11"></span>
+<span class="tetris-block yellow b12"></span>
+<span class="tetris-block green b13"></span>
+<span class="tetris-block green b14"></span>
+<span class="tetris-block green b15"></span>
+<span class="tetris-block green b16"></span>
+<span class="tetris-block red b17"></span>
+<span class="tetris-block red b18"></span>
+<span class="tetris-block red b19"></span>
+<span class="tetris-block red b20"></span>
+</div>
+</div>
+<div class="project-info">
+<span>
+                        Game
+                    </span>
+<h3>
+                        Tetris
+                    </h3>
+<button id="tetris-button">
+                        Play Game
+                    </button>
+</div>
+</div><div class="project-card" data-game-tip="Game: Pong — Move your paddle to return the ball past your opponent. Tip: meet the ball early and use paddle contact position to aim.">
+<div class="project-preview pong-preview">
+<div class="mini-pong">
+<div class="mini-pong-paddle player"></div>
+<div class="mini-pong-ball"></div>
+<div class="mini-pong-paddle cpu"></div>
+</div>
+</div>
+<div class="project-info">
+<span>
+                        Game
+                    </span>
+<h3>
+                        Pong
+                    </h3>
+<button id="pong-button">
+                        Play Game
+                    </button>
+</div>
+</div><div class="project-card" data-game-tip="Game: Minesweeper — Reveal safe tiles while avoiding hidden mines. Tip: each number counts mines in its eight neighboring squares.">
+<div class="project-preview minesweeper-preview">
+<div class="mini-minesweeper">
+<span>1</span>
+<span>1</span>
+<span>2</span>
+<span>⚑</span>
+<span>1</span>
+<span>1</span>
+<span>2</span>
+<span>3</span>
+<span>1</span>
+<span>1</span>
+<span>⚑</span>
+<span>2</span>
+<span>💣</span>
+<span>2</span>
+<span>⚑</span>
+<span>1</span>
+<span>1</span>
+<span>2</span>
+<span>2</span>
+<span>1</span>
+<span>0</span>
+<span>1</span>
+<span>1</span>
+<span>0</span>
+<span>0</span>
+</div>
+</div>
+<div class="project-info">
+<span>
+                        Game
+                    </span>
+<h3>
+                        Minesweeper
+                    </h3>
+<button id="minesweeper-button">
+                        Play Game
+                    </button>
+</div>
+</div>
+<!-- HANGMAN -->
+
+<!-- SNAKE -->
+
+<!-- TIC TAC TOE -->
+
+<!-- ROCK PAPER SCISSORS -->
+
+<!-- CONNECT FOUR -->
+
+<!-- BRICK BREAKER -->
+
+<!-- TETRIS -->
+
+<!-- PONG -->
+
+<!-- MINESWEEPER -->
+
+<!-- SIX ADDED GAMES: miniature board previews follow the original card composition. -->
+<div class="project-card" data-game-tip="Game: Galaga — Pilot a ship and shoot incoming alien waves. Tip: keep moving, watch enemy attack patterns, and fire steadily.">
+<div class="project-preview galaga-card-preview"><div aria-hidden="true" class="mini-galaga"><div class="mini-galaga-aliens"><i class="mini-galaga-alien alien-pink"></i><i class="mini-galaga-alien alien-purple"></i><i class="mini-galaga-alien alien-yellow"></i><i class="mini-galaga-alien alien-cyan"></i><i class="mini-galaga-alien alien-pink"></i><i class="mini-galaga-alien alien-purple"></i></div><i class="mini-galaga-shot"></i><i class="mini-galaga-ship"></i></div></div>
+<div class="project-info"><span>Game</span><h3>Galaga</h3><button id="galaga-button" type="button">Play Game</button></div>
+</div>
+<div class="project-card" data-game-tip="Game: 2048 — Slide matching numbered tiles together to reach 2048. Tip: keep your largest tile in a corner and build around it.">
+<div class="project-preview"><div aria-hidden="true" class="preview-2048"><span>2</span><span>4</span><span>8</span><span>16</span><span>4</span><span>32</span><span>64</span><span>128</span><span>8</span><span>16</span><span>512</span><span>2048</span><span>2</span><span>4</span><span>32</span><span>64</span></div></div>
+<div class="project-info"><span>Game</span><h3>2048</h3><button id="2048-button" type="button">Play Game</button></div>
+</div>
+<div class="project-card" data-game-tip="Game: Frogger — Cross traffic and water to reach the home pads. Tip: move in short, deliberate steps and time road crossings between vehicles.">
+<div class="project-preview frogger-card-preview"><div class="mini-frogger"><iframe src="projects/frogger/index.html?preview=static" title="Static Frogger preview using in-game graphics" loading="lazy" tabindex="-1" aria-hidden="true"></iframe></div></div>
+<div class="project-info"><span>Game</span><h3>Frogger</h3><button id="frogger-button" type="button">Play Game</button></div>
+</div>
+<div class="project-card" data-game-tip="Game: Whack-a-Mole — Hit moles as they pop up before time runs out. Tip: scan the whole board and prioritize quick, safe hits."><div class="project-preview whack-card-preview"><div class="mini-whack"><iframe src="projects/whack-a-mole/index.html?preview=static" title="Whack-a-Mole static preview with large mole emoji" loading="lazy" tabindex="-1" aria-hidden="true"></iframe></div></div><div class="project-info"><span>Game</span><h3>Whack-a-Mole</h3><button id="whack-a-mole-button" type="button">Play Game</button></div></div>
+<div class="project-card" data-game-tip="Game: Dinosaur Run — Jump over obstacles and survive as the run speeds up. Tip: watch the ground ahead and jump early for tall obstacles.">
+<div class="project-preview dinosaur-card-preview"><div class="mini-dinosaur"><iframe src="projects/dinosaur/index.html?preview=static" title="Dinosaur Run static mini preview using in-game graphics" loading="lazy" tabindex="-1" aria-hidden="true"></iframe></div></div>
+<div class="project-info"><span>Game</span><h3>Dinosaur Run</h3><button id="dinosaur-button" type="button">Play Game</button></div>
+</div>
+<div class="project-card" data-game-tip="Game: Doodle Jumper — Bounce upward from platform to platform. Tip: line up your landings and favor stable platforms when choosing a route.">
+<div class="project-preview doodle-card-preview"><div class="mini-doodle"><iframe src="projects/doodle-jumper/index.html?preview=static" title="Doodle Jumper static mini preview using in-game graphics" loading="lazy" tabindex="-1" aria-hidden="true"></iframe></div></div>
+<div class="project-info"><span>Game</span><h3>Doodle Jumper</h3><button id="doodle-jumper-button" type="button">Play Game</button></div>
+</div>
+</div>
+</section></main><footer class="site-footer"><span>FAIRY'S ARCADE</span><span>Explore • Learn • Play</span></footer><div aria-hidden="true" class="fairy-tutorial" id="fairy-tutorial"><div class="fairy-tutorial-backdrop"></div><div aria-labelledby="fairy-name" aria-modal="true" class="fairy-stage" role="dialog"><div class="fairy-stage-orbit orbit-one"></div><div class="fairy-stage-orbit orbit-two"></div><img alt="Fairy, your arcade guide" class="fairy-stage-logo" src="images/fairy-logo.png"/><div class="fairy-stage-tag">PORTFOLIO GUIDE // ONLINE</div><div class="fairy-dialogue"><div class="fairy-dialogue-heading"><span id="fairy-name">FAIRY</span><span class="fairy-online"><i></i> ONLINE</span></div><p aria-live="polite" id="fairy-tutorial-text">Hi, player! Ready to explore?</p><div aria-hidden="true" class="fairy-radio-demo" id="fairy-radio-demo"><div class="fairy-radio-demo-head"><span>♪ ARCADE RADIO</span><span class="fairy-radio-demo-led"></span></div><div class="fairy-radio-demo-track">♫ Level Up Theme</div><div class="fairy-radio-demo-controls"><span>◀</span><span>▶</span><span>▶|</span><span>🔊</span></div><small>DEMO PLAYER · ACTUAL RADIO STAYS IN PLACE</small></div><div aria-label="Tutorial progress" class="fairy-tutorial-progress"><span id="fairy-progress-fill"></span></div><div class="fairy-dialogue-actions"><button class="fairy-button fairy-button-quiet" id="fairy-back" type="button">BACK</button><button class="fairy-button fairy-button-quiet" id="fairy-skip" type="button">SKIP TUTORIAL</button><button class="fairy-button fairy-button-primary" id="fairy-next" type="button">NEXT ▶</button></div></div></div></div><div aria-hidden="true" class="fairy-highlight-label" id="fairy-highlight-label">FAIRY'S TIP</div><div aria-label="Fairy assistant" class="fairy-dock" id="fairy-dock"><div aria-hidden="true" class="fairy-chat-panel" id="fairy-chat-panel"><div class="fairy-chat-header"><div class="fairy-chat-avatar"><img alt="" src="images/fairy-logo.png"/></div><div class="fairy-chat-title"><strong>FAIRY</strong><span><i></i> YOUR ARCADE GUIDE</span></div><button aria-label="Close Fairy chat" id="fairy-chat-close" type="button">×</button></div><div aria-live="polite" class="fairy-chat-messages" id="fairy-chat-messages"><div class="fairy-message fairy-message-bot">Hey, player! Ask me about the portfolio, projects, or arcade games.</div></div><div class="fairy-quick-prompts"><button data-fairy-prompt="What is in the arcade?" type="button">ARCADE</button><button data-fairy-prompt="Tell me about Seth." type="button">ABOUT SETH</button><button data-fairy-prompt="How do I use this site?" type="button">HELP</button></div><form class="fairy-chat-form" id="fairy-chat-form"><input aria-label="Message Fairy" autocomplete="off" id="fairy-chat-input" maxlength="400" placeholder="Ask Fairy something…" type="text"/><button aria-label="Send message" type="submit">➤</button></form><div class="fairy-chat-footnote">LOCAL SCRIPTED ASSISTANT</div></div><button aria-expanded="false" aria-label="Open Fairy assistant" class="fairy-fab" id="fairy-fab" type="button"><span class="fairy-fab-ring"></span><img alt="Open Fairy chat" src="images/fairy-logo.png"/><span class="fairy-fab-status"></span><span class="fairy-fab-tooltip">Need a guide?</span></button></div><div aria-hidden="true" class="game-modal" id="game-modal"><div class="game-modal-content"><button aria-label="Close game" class="close-game-modal" id="close-game-modal" type="button">×</button><iframe id="connect-four-frame" loading="lazy" src="" title="Arcade mini-game"></iframe><button aria-label="Mute game sound effects" aria-pressed="false" class="game-sound-toggle" id="game-sound-toggle" type="button">🔊 Sound</button></div></div><script defer="" src="fairy-knowledge.js"></script><script defer="" src="script.js"></script></body></html>

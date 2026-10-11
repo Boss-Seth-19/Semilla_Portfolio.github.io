@@ -1,0 +1,9 @@
+FAIRY'S ARCADE - SIX GAME ADDITIONS / FIXES
+
+Added game folders: projects/galaga, projects/2048, projects/frogger, projects/whack-a-mole, projects/dinosaur, projects/doodle-jumper.
+
+Frogger fixes: car collision now checks the vehicle's actual lane y coordinate (the previous code compared against undefined item.y, so car hits were never detected); water/log checks use the frog's center against the actual log row; riding logs carries the frog with the correct lane speed; being carried off-screen costs a life; reaching home pads uses five evenly sized target zones and occupied pads are rejected.
+
+Testing: open arcade.html with VS Code Live Server. All six added cards launch via the existing game modal. For standalone testing, open each project's index.html using Live Server.
+
+V3.5 polish: full-bleed previews for the original games, upgraded previews for the six added games, Galaga explosions/power-ups/swooping enemies, expanded Frogger layout, extra dinosaur hazards, larger moles, animated 2048 tiles, and Doodle Jumper bunny/boost/moving/breakable platforms.

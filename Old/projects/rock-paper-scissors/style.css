@@ -1,0 +1,156 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 25px 15px;
+
+    background: #0B1026;
+    color: #F8FAFC;
+
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    margin: 0 0 10px;
+
+    font-size: 32px;
+    text-align: center;
+}
+
+#status {
+    min-height: 24px;
+    margin-bottom: 25px;
+
+    color: #94A3B8;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.choices {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+
+    width: min(520px, 95vw);
+}
+
+.choice {
+    width: 145px;
+    height: 145px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    background: #111936;
+    color: #F8FAFC;
+
+    border: 1px solid #252D50;
+    border-radius: 15px;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.choice:hover {
+    border-color: #7C3AED;
+    background: #182044;
+    transform: translateY(-5px);
+}
+
+.choice:active {
+    transform: translateY(-1px);
+}
+
+.choice-icon {
+    font-size: 42px;
+    line-height: 1;
+}
+
+.choice span:last-child {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.results {
+    width: min(520px, 95vw);
+
+    display: flex;
+    justify-content: center;
+    gap: 35px;
+
+    margin-top: 30px;
+
+    color: #94A3B8;
+}
+
+.results p {
+    margin: 0;
+    text-align: center;
+}
+
+.results span {
+    color: #F8FAFC;
+    font-weight: bold;
+}
+
+#score {
+    color: #7C3AED;
+}
+
+#reset-button {
+    margin-top: 25px;
+
+    padding: 12px 24px;
+
+    background: #4F46E5;
+    color: #F8FAFC;
+
+    border: 1px solid #7C3AED;
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+#reset-button:hover {
+    background: #7C3AED;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 600px) {
+    .choices {
+        gap: 8px;
+    }
+
+    .choice {
+        width: 30vw;
+        height: 130px;
+    }
+
+    .choice-icon {
+        font-size: 34px;
+    }
+
+    .results {
+        gap: 15px;
+        font-size: 14px;
+    }
+}
